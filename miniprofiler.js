@@ -244,7 +244,7 @@ function instrument(func, defaultName) {
 			for(var i = 0; i < args.length; i++){
 				var arg = args[i];
 				if(arg && isFunction(arg)){
-					args[i] = instrument(arg, 'name arg #'+i);
+					args[i] = instrument(arg, name+' arg #'+i);
 				}
 			}
 		}
