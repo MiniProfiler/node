@@ -82,6 +82,7 @@ function stopProfiling(){
 		throw new Error('profiling ended while still in a function, was left in ['+extension.stepGraph.name+']');
 	}
 
+	extension.stopTime = time;
 	extension.stepGraph.stopTime = time;
 
 	// get those references gone, we can't assume much about GC here
@@ -162,11 +163,11 @@ function describePerformance(root) {
 	// http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
 	ret.Id = makeGuid();
 	ret.Name = '';
-	ret.Started = '\/Date('+root.startDate+')\/';
+	ret.Started = '/Date('+root.startDate+')/';
 	// This doesn't seem to be a thing in node.js
 	ret.MachineName = 'Unknown';
 	ret.Level = 'Info';
-	ret.Root = describeTimings(root, root);
+	ret.Root = describeTimings(root.stepGraph, root.stepGraph);
 	ret.User = '';
 	ret.HasUserViewed = false;
 	ret.ClientTimings = null;
@@ -175,6 +176,10 @@ function describePerformance(root) {
 }
 
 function diff(start, stop){
+	if(!start || !stop) {
+		debugger;
+	}
+
 	var deltaSecs = stop[0] - start[0];
 	var deltaNanoSecs = stop[1] - start[1];
 
@@ -190,7 +195,8 @@ function describeTimings(timing, root){
 	var sinceRootMs = diff(root.startTime, timing.startTime);
 
 	var children = [];
-	for(var step in timing.steps){
+	for(var i = 0; i < timing.steps.length; i++){
+		var step = timing.steps[i];
 		children.push(describeTimings(step, root));
 	}
 
