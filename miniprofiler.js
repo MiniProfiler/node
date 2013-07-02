@@ -54,7 +54,7 @@ function startProfiling(request) {
 	currentRequestExtension.startDate = Date.now();
 	currentRequestExtension.startTime = process.hrtime();
 	currentRequestExtension.stopTime = null;
-	currentRequestExtension.stepGraph = makeStep('root', extension.startTime, null);
+	currentRequestExtension.stepGraph = makeStep('root', currentRequestExtension.startTime, null);
 
 	request.miniprofiler_extension = currentRequestExtension;
 }
@@ -96,7 +96,10 @@ function step(name, call) {
 	var domain = getDomain();
 
 	// Not profiling
-	if(!domain.miniprofiler_currentRequest) return;
+	if(!domain.miniprofiler_currentRequest) {
+		var ret = call();
+		return ret;
+	}
 
 	var time = process.hrtime();
 
@@ -108,14 +111,18 @@ function step(name, call) {
 
 	var failed = false;
 
+	var result;
+
 	try {
-		return call();
+		result = call();
 	} catch(e) {
 		failed = true;
 		throw e;
 	} finally {
 		unstep(name, failed);
 	}
+
+	return result;
 }
 
 function unstep(name, failed) {
@@ -222,15 +229,18 @@ function instrument(func) {
 	var name = func.name || 'UnnamedFunction'+(UnnamedFunctionCount++);
 
 	var ret = function() {
-		var toApply = this[func];
+		var toApply = func;
 		var that = this;
-		var args = Array.prototype.slice.call(arguments, 1);
+		var args = Array.prototype.slice.call(arguments);
 
-		return 
-			step(
+		return step(
 				name,
 				function() {
-					return toApply.apply(that, args);
+					debugger;
+
+					var ret = toApply.apply(that, args);
+
+					return ret;
 				}
 			);
 	};
@@ -259,20 +269,22 @@ function addProfilingImpl(toInstrument) {
 				var member = toWrap[i];
 				if(member.miniprofiler_instrumented) continue;
 
-				addProfilingImpl(member, extension);
+				addProfilingImpl(member);
 			}
 
 			continue;
 		}
 
 		if(isObject(toWrap)) {
-			addProfilingImpl(toWrap, extension);
+			addProfilingImpl(toWrap);
 
 			continue;
 		}
 
 		if(isFunction(toWrap)) {
-			toInstrument[prop] = instrument(toWrap, extension);
+			var wrappedFunc = instrument(toWrap);
+
+			toInstrument[prop] = wrappedFunc;
 
 			continue;
 		}
