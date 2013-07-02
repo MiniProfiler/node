@@ -9,7 +9,7 @@
 var domain = require('domain');
 
 // EXPORTS
-exports.addProfiling = addProfiling;
+exports.instrument = addProfiling;
 exports.startProfiling = startProfiling;
 exports.stopProfiling = stopProfiling;
 exports.step = step;
@@ -35,7 +35,10 @@ function addProfiling(toInstrument) {
 		throw new Error('toInstrument must be an object');
 	}
 
-	addProfilingImpl(toInstrument);
+	if(!toInstrument.miniprofiler_instrumented)
+	{
+		addProfilingImpl(toInstrument);
+	}
 
 	return toInstrument;
 }
@@ -46,7 +49,8 @@ function addProfiling(toInstrument) {
  * Note that this call must occur in the context of the domain that will service this request.
  */
 function startProfiling(request) {
-	var domain = getDomain();
+	var domain = getDomain('--startProfiling');
+	if(!domain) return;
 
 	domain.miniprofiler_currentRequest = request;
 	var currentRequestExtension = {};
@@ -65,10 +69,10 @@ function startProfiling(request) {
  * Note that this call must occur in the context of the domain that services this request.
  */
 function stopProfiling(){
-	var domain = getDomain();
+	var domain = getDomain('--stopProfiling');
 
 	// not profiling
-	if(!domain.miniprofiler_currentRequest) return null;
+	if(!domain || !domain.miniprofiler_currentRequest) return null;
 
 	var extension = domain.miniprofiler_currentRequest.miniprofiler_extension;
 
@@ -93,10 +97,10 @@ function stopProfiling(){
  * You should only use this method directly in cases when calls to addProfiling won't suffice.
  */
 function step(name, call) {
-	var domain = getDomain();
+	var domain = getDomain('--step: '+name);
 
 	// Not profiling
-	if(!domain.miniprofiler_currentRequest) {
+	if(!domain || !domain.miniprofiler_currentRequest) {
 		var ret = call();
 		return ret;
 	}
@@ -128,10 +132,10 @@ function step(name, call) {
 function unstep(name, failed) {
 	var time = process.hrtime();
 
-	var domain = getDomain();
+	var domain = getDomain('--unstep: '+name);
 
 	// Not profiling
-	if(!domain.miniprofiler_currentRequest) return;
+	if(!domain || !domain.miniprofiler_currentRequest) return;
 
 	var extension = domain.miniprofiler_currentRequest.miniprofiler_extension;
 
@@ -201,14 +205,14 @@ function describeTimings(timing, root){
 	};
 }
 
-function getDomain(){
+function getDomain(debugName){
 	if(this instanceof domain.Domain) {
 		return this;
 	}
 
 	if(domain.active) return domain.active;
 
-	throw new Error('miniprofiler assumes a domain per request, domain.active is not set and this is not an instance of domain.Domain');
+	return null;
 }
 
 function makeStep(name, time, parent){
@@ -224,9 +228,10 @@ function isFunction(func) {
 	return getType.toString.call(func) === '[object Function]';
 }
 
-var UnnamedFunctionCount = 0;
 function instrument(func) {
-	var name = func.name || 'UnnamedFunction'+(UnnamedFunctionCount++);
+	var name = func.name;
+
+	if(!name) return func;
 
 	var ret = function() {
 		var toApply = func;
@@ -236,8 +241,6 @@ function instrument(func) {
 		return step(
 				name,
 				function() {
-					debugger;
-
 					var ret = toApply.apply(that, args);
 
 					return ret;
