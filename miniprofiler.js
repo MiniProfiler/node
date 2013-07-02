@@ -233,14 +233,21 @@ function isFunction(func) {
 }
 
 function instrument(func) {
-	var name = func.name;
-
-	if(!name) return func;
+	var name = func.name || 'Unnamed';
 
 	var ret = function() {
 		var toApply = func;
 		var that = this;
 		var args = Array.prototype.slice.call(arguments);
+
+		if(args) {
+			for(var i = 0; i < args.length; i++){
+				var arg = args[i];
+				if(arg && isFunction(arg)){
+					args[i] = instrument(arg);
+				}
+			}
+		}
 
 		return step(
 				name,
