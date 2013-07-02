@@ -232,8 +232,8 @@ function isFunction(func) {
 	return getType.toString.call(func) === '[object Function]';
 }
 
-function instrument(func) {
-	var name = func.name || 'Unnamed';
+function instrument(func, defaultName) {
+	var name = func.name || defaultName || 'Unnamed';
 
 	var ret = function() {
 		var toApply = func;
@@ -244,7 +244,7 @@ function instrument(func) {
 			for(var i = 0; i < args.length; i++){
 				var arg = args[i];
 				if(arg && isFunction(arg)){
-					args[i] = instrument(arg);
+					args[i] = instrument(arg, 'name arg #'+i);
 				}
 			}
 		}
@@ -296,7 +296,7 @@ function addProfilingImpl(toInstrument) {
 		}
 
 		if(isFunction(toWrap)) {
-			var wrappedFunc = instrument(toWrap);
+			var wrappedFunc = instrument(toWrap, prop);
 
 			toInstrument[prop] = wrappedFunc;
 
