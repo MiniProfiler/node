@@ -85,11 +85,13 @@ function stopProfiling(){
 	extension.stopTime = time;
 	extension.stepGraph.stopTime = time;
 
+	var request = domain.miniprofiler_currentRequest;
+
 	// get those references gone, we can't assume much about GC here
 	delete domain.miniprofiler_currentRequest.miniprofiler_extension;
 	delete domain.miniprofiler_currentRequest;
 
-	return describePerformance(extension);
+	return describePerformance(extension, request);
 }
 
 /*
@@ -158,11 +160,11 @@ function makeGuid() {
 			});
 }
 
-function describePerformance(root) {
+function describePerformance(root, request) {
 	var ret = {};
 	// http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
 	ret.Id = makeGuid();
-	ret.Name = '';
+	ret.Name = request.url || 'Unknown';
 	ret.Started = '/Date('+root.startDate+')/';
 	// This doesn't seem to be a thing in node.js
 	ret.MachineName = 'Unknown';
@@ -176,10 +178,6 @@ function describePerformance(root) {
 }
 
 function diff(start, stop){
-	if(!start || !stop) {
-		debugger;
-	}
-
 	var deltaSecs = stop[0] - start[0];
 	var deltaNanoSecs = stop[1] - start[1];
 

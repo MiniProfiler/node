@@ -18,8 +18,10 @@ var server = http.createServer(function(request, response) {
 	  	response.write('Hello World\n');
 
 	  	miniprofiler.step('testing!', function() {
-	  		for(var i = 0; i < 10000; i++){
-	  			console.log('whatever'+i);
+	  		for(var i = 0; i < 100; i++){
+	  			miniprofiler.step('Doit', function() {
+	  				console.log('whatever'+i);
+	  			});
 	  		}
 	  	});
 
