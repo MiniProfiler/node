@@ -77,8 +77,7 @@ function configure(options){
  *
  * Descends recursively, but will terminate even if there are cycles in the object graph.
  *
- * Adds the function `miniprofiler_startProfiling(domain, req)` to `toInstrument` and any contained objects that
- * have functions.  Will throw if that name is already in use.
+ * Adds `miniprofiler_instrumented` to `toInstrument`, any contained objects, and any contained functions.
  *
  * Note that to use miniprofiler you *must* be creating a new domain per request, this is necessary for request tracking
  * purposes.
