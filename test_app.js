@@ -10,6 +10,8 @@ var helper = {
 	}
 };
 
+miniprofiler.configure();
+
 helper = miniprofiler.instrument(helper);
 
 var server = http.createServer(function(request, response) {
@@ -43,9 +45,9 @@ var server = http.createServer(function(request, response) {
 
 		response.write('\n');
 
-	  	var profiling = miniprofiler.stopProfiling();
+	  	var id = miniprofiler.stopProfiling();
 
-	  	response.end(JSON.stringify(profiling));
+	  	response.end(id);
   	});
 });
 server.listen(8080, 'localhost');

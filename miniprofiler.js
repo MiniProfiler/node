@@ -9,10 +9,67 @@
 var domain = require('domain');
 
 // EXPORTS
-exports.instrument = addProfiling;
+exports.configure = configure;
+exports.instrument = addProfilingInstrumentation;
 exports.startProfiling = startProfiling;
 exports.stopProfiling = stopProfiling;
 exports.step = step;
+
+// GLOBALS
+var storage = function(id, json) {
+	this.results = this.results || [];
+
+	if(json) {
+		if(this.results.length > 20) {
+			this.results = this.results.slice(1);
+		}
+
+		this.results.push({ id: id, json: json });
+
+		return;
+	}
+
+	for(var i = 0; i < this.results.length; i++) {
+		var res = this.results[i];
+
+		if(res.id == id) return res.json;
+	}
+
+	return null;
+};
+var ignoredPaths = [];
+var trivialDurationThresholdMilliseconds = 2.5;
+var popupShowTimeWithChildren = false;
+var popupRenderPosition = 'left';
+var configured = false;
+
+// FUNCTIONS
+
+/*
+ * Setup profiling.  This function may only be called once, subsequent calls are ignored.
+ *
+ * This must be called before the first call to startProfiling, but doesn't need to be called in the context of a domain.
+ *
+ * options is an optional object, which can have the following fields:
+ *  - storage: function(id[, json]) ; called to store (if json is present) or fetch (if json is omitted) a string JSON blob of profiling information
+ *  - ignoredPaths: string array ; any request whose `url` property is in ignoredPaths will not be profiled
+ *  - trivialDurationThresholdMilliseconds: double ; any step lasting longer than this will be considered trivial, and hidden by default
+ *  - popupShowTimeWithChildren: boolean ; whether or not to include the "time with children" column
+ *  - popupRenderPosition: 'left' or 'right' ; which side of the screen to display timings on
+ */
+function configure(options){
+	if(configured) return;
+
+	if(options) {
+		storage = options.storage || storage;
+		ignoredPaths = options.ignoredPaths || ignoredPaths;
+		trivialDurationThresholdMilliseconds = options.trivialDurationThresholdMilliseconds || trivialDurationThresholdMilliseconds;
+		popupShowTimeWithChildren = options.popupShowTimeWithChildren || popupShowTimeWithChildren;
+		popupRenderPosition = options.popupRenderPosition || popupRenderPosition;
+	}
+
+	configured = true;
+}
 
 /*
  * Modifies `toInstrument` such that each function has been instrumented for miniprofiler purposes.
@@ -26,7 +83,7 @@ exports.step = step;
  * Note that to use miniprofiler you *must* be creating a new domain per request, this is necessary for request tracking
  * purposes.
  */
-function addProfiling(toInstrument) {
+function addProfilingInstrumentation(toInstrument) {
 	if(!toInstrument){
 		throw new Error('toInstrument must be set');
 	}
@@ -49,6 +106,8 @@ function addProfiling(toInstrument) {
  * Note that this call must occur in the context of the domain that will service this request.
  */
 function startProfiling(request) {
+	if(!configured) throw new Error('configure() must be called before the first call to startProfiling');
+
 	var domain = getDomain('--startProfiling');
 	if(!domain) return;
 
@@ -59,6 +118,7 @@ function startProfiling(request) {
 	currentRequestExtension.startTime = process.hrtime();
 	currentRequestExtension.stopTime = null;
 	currentRequestExtension.stepGraph = makeStep('root', currentRequestExtension.startTime, null);
+	currentRequestExtension.id = makeGuid();
 
 	request.miniprofiler_extension = currentRequestExtension;
 }
@@ -91,7 +151,12 @@ function stopProfiling(){
 	delete domain.miniprofiler_currentRequest.miniprofiler_extension;
 	delete domain.miniprofiler_currentRequest;
 
-	return describePerformance(extension, request);
+	var json = describePerformance(extension, request);
+	var ret = extension.id;
+
+	storage(ret, JSON.stringify(json));
+
+	return ret;
 }
 
 /*
@@ -163,7 +228,7 @@ function makeGuid() {
 function describePerformance(root, request) {
 	var ret = {};
 	// http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
-	ret.Id = makeGuid();
+	ret.Id = root.id;
 	ret.Name = request.url || 'Unknown';
 	ret.Started = '/Date('+root.startDate+')/';
 	// This doesn't seem to be a thing in node.js
