@@ -19,8 +19,6 @@ exports.step = step;
 var storage = function(id, json) {
 	this.results = this.results || [];
 
-	debugger;
-
 	if(json) {
 		if(this.results.length > 20) {
 			this.results = this.results.slice(1);
