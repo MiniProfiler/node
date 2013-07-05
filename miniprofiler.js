@@ -203,7 +203,7 @@ function step(name, call) {
 }
 
 /*
- *	Called to time a query, like to SQL or Redis.
+ *	Called to time a query, like to SQL or Redis, that completes with a callback
  *
  *  `type` can be any string, it is used to group query types in timings.
  *  `query` is a string representing the query, this is what is recorded as having run.
@@ -214,7 +214,7 @@ function step(name, call) {
  *  when the query has completed.  Implicitly, any execution of a callback is considered
  *  to have ended the query.
  */
-function timeQuery(type, query, callback, executeFunction /*, params[] */) {
+function timeQuery(type, query, executeFunction /*, params[] */) {
 	var time = process.hrtime();
 	var startDate = Date.now();
 
