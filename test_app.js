@@ -47,7 +47,9 @@ var server = http.createServer(function(request, response) {
 
 	  	var id = miniprofiler.stopProfiling();
 
-	  	response.end(id);
+	  	response.write(id);
+	  	response.write('\n');
+	  	response.end(miniprofiler.getProfiling(id));
   	});
 });
 server.listen(8080, 'localhost');

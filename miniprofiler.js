@@ -14,6 +14,8 @@ exports.instrument = addProfilingInstrumentation;
 exports.startProfiling = startProfiling;
 exports.stopProfiling = stopProfiling;
 exports.step = step;
+exports.timeQuery = timeQuery;
+exports.getProfiling = getProfiling;
 
 // GLOBALS
 var storage = function(id, json) {
@@ -69,6 +71,10 @@ function configure(options){
 	}
 
 	configured = true;
+}
+
+function getProfiling(id){
+	return storage(id);
 }
 
 /*
@@ -196,6 +202,70 @@ function step(name, call) {
 	return result;
 }
 
+/*
+ *	Called to time a query, like to SQL or Redis.
+ *
+ *  `type` can be any string, it is used to group query types in timings.
+ *  `query` is a string representing the query, this is what is recorded as having run.
+ *
+ *  `executeFunction` is invoked with any additional parameters following it.
+ *
+ *  Any function passed as a parameter to `executeFunction` will be instrumented to detect
+ *  when the query has completed.  Implicitly, any execution of a callback is considered
+ *  to have ended the query.
+ */
+function timeQuery(type, query, callback, executeFunction /*, params[] */) {
+	var time = process.hrtime();
+	var startDate = Date.now();
+
+	var domain = getDomain('--timeQuery: '+name);
+
+	// Not profiling
+	if(!domain || !domain.miniprofiler_currentRequest) return;
+
+	var extension = domain.miniprofiler_currentRequest.miniprofiler_extension;
+
+	if(!extension.customTimings[type]) {
+		extension.customTimings[type] = [];
+	}
+
+	var customTiming = { 
+		id: makeGuid(), 
+		executeType: type, 
+		commandString: htmlEscape(query), 
+		startTime: time,
+		startDate: startDate
+	};
+
+	var params = Array.prototype.slice.call(arguments, 4);
+
+	for(var i = 0; i < params.length; i++){
+		var param = params[i];
+		if(isFunction(params[i])){
+			params[i] = function() {
+				customTimings.stopTime = process.hrtime();
+
+				var ret = param.apply(this, arguments);
+
+				return ret;
+			};
+		}
+	}
+
+	var ret = executeFunction.apply(this, params);
+
+	return ret;
+}
+
+function htmlEscape(str) {
+    return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+}
+
 function unstep(name, failed) {
 	var time = process.hrtime();
 
@@ -218,6 +288,7 @@ function unstep(name, failed) {
 }
 
 function makeGuid() {
+	// http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
 	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
 			    var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
 			    return v.toString(16);
@@ -226,10 +297,10 @@ function makeGuid() {
 
 function describePerformance(root, request) {
 	var ret = {};
-	// http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
+	
 	ret.Id = root.id;
 	ret.Name = request.url || 'Unknown';
-	ret.Started = '/Date('+root.startDate+')/';
+	ret.Started = root.startDate;
 	// This doesn't seem to be a thing in node.js
 	ret.MachineName = 'Unknown';
 	ret.Level = 'Info';
@@ -255,6 +326,7 @@ function describeTimings(timing, root){
 	var name = timing.name;
 	var elapsedMs = diff(timing.startTime, timing.stopTime);
 	var sinceRootMs = diff(root.startTime, timing.startTime);
+	var customTimings = describeCustomTimings(timing.customTimings);
 
 	var children = [];
 	for(var i = 0; i < timing.steps.length; i++){
@@ -268,9 +340,37 @@ function describeTimings(timing, root){
 		DurationMilliseconds: elapsedMs,
 		StartMilliseconds: sinceRootMs,
 		Children: children,
-		KeyValues: null,
-		SqlTimings: null
+		CustomTimings: customTimings
 	};
+}
+
+function describeCustomTimings(customTimings) {
+	var ret = {};
+	for(var prop in customTimings) {
+		if(!customTimings.hasOwnProperty(prop)) continue;
+
+		var arr = ret[prop];
+		var retArr = [];
+
+		debugger;
+
+		for(var i = 0; i < arr.length; i++) {
+			var timing = {};
+			timing.Id = arr[i].id;
+			timing.ExecuteType = arr[i].executeType;
+			timing.CommandString = arr[i].commandString;
+			timing.StartMilliseconds = arr[i].startDate;
+			timing.DurationMilliseconds = diff(arr[i].startTime, arr[i].stopTime);
+			timing.StackTraceSnippet = null;
+			timing.FirstFetchDurationMilliseconds = null;
+
+			retArr.push(timing);
+		}
+
+		ret[prop] = retArr;
+	}
+
+	return ret;
 }
 
 function getDomain(debugName){
@@ -284,7 +384,7 @@ function getDomain(debugName){
 }
 
 function makeStep(name, time, parent){
-	return { name: name, startTime: time, stopTime: null, parent: parent, steps: [] };
+	return { name: name, startTime: time, stopTime: null, parent: parent, steps: [], customTimings: {} };
 }
 
 function isObject(val) {
