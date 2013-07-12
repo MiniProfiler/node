@@ -19,25 +19,25 @@ exports.getProfiling = getProfiling;
 
 // GLOBALS
 var storage = function(id, json) {
-	this.results = this.results || [];
+    this.results = this.results || [];
 
-	if(json) {
-		if(this.results.length > 20) {
-			this.results = this.results.slice(1);
-		}
+    if(json) {
+        if(this.results.length > 20) {
+            this.results = this.results.slice(1);
+        }
 
-		this.results.push({ id: id, json: json });
+        this.results.push({ id: id, json: json });
 
-		return;
-	}
+        return;
+    }
 
-	for(var i = 0; i < this.results.length; i++) {
-		var res = this.results[i];
+    for(var i = 0; i < this.results.length; i++) {
+        var res = this.results[i];
 
-		if(res.id == id) return res.json;
-	}
+        if(res.id == id) return res.json;
+    }
 
-	return null;
+    return null;
 };
 var ignoredPaths = [];
 var trivialDurationThresholdMilliseconds = 2.5;
@@ -60,21 +60,21 @@ var configured = false;
  *  - popupRenderPosition: 'left' or 'right' ; which side of the screen to display timings on
  */
 function configure(options){
-	if(configured) return;
+    if(configured) return;
 
-	if(options) {
-		storage = options.storage || storage;
-		ignoredPaths = options.ignoredPaths || ignoredPaths;
-		trivialDurationThresholdMilliseconds = options.trivialDurationThresholdMilliseconds || trivialDurationThresholdMilliseconds;
-		popupShowTimeWithChildren = options.popupShowTimeWithChildren || popupShowTimeWithChildren;
-		popupRenderPosition = options.popupRenderPosition || popupRenderPosition;
-	}
+    if(options) {
+        storage = options.storage || storage;
+        ignoredPaths = options.ignoredPaths || ignoredPaths;
+        trivialDurationThresholdMilliseconds = options.trivialDurationThresholdMilliseconds || trivialDurationThresholdMilliseconds;
+        popupShowTimeWithChildren = options.popupShowTimeWithChildren || popupShowTimeWithChildren;
+        popupRenderPosition = options.popupRenderPosition || popupRenderPosition;
+    }
 
-	configured = true;
+    configured = true;
 }
 
 function getProfiling(id){
-	return storage(id);
+    return storage(id);
 }
 
 /*
@@ -89,20 +89,20 @@ function getProfiling(id){
  * purposes.
  */
 function addProfilingInstrumentation(toInstrument) {
-	if(!toInstrument){
-		throw new Error('toInstrument must be set');
-	}
+    if(!toInstrument){
+        throw new Error('toInstrument must be set');
+    }
 
-	if(!isObject(toInstrument)) {
-		throw new Error('toInstrument must be an object');
-	}
+    if(!isObject(toInstrument)) {
+        throw new Error('toInstrument must be an object');
+    }
 
-	if(!toInstrument.miniprofiler_instrumented)
-	{
-		addProfilingImpl(toInstrument);
-	}
+    if(!toInstrument.miniprofiler_instrumented)
+    {
+        addProfilingImpl(toInstrument);
+    }
 
-	return toInstrument;
+    return toInstrument;
 }
 
 /*
@@ -111,21 +111,21 @@ function addProfilingInstrumentation(toInstrument) {
  * Note that this call must occur in the context of the domain that will service this request.
  */
 function startProfiling(request) {
-	if(!configured) throw new Error('configure() must be called before the first call to startProfiling');
+    if(!configured) throw new Error('configure() must be called before the first call to startProfiling');
 
-	var domain = getDomain('--startProfiling');
-	if(!domain) return;
+    var domain = getDomain('--startProfiling');
+    if(!domain) return;
 
-	domain.miniprofiler_currentRequest = request;
-	var currentRequestExtension = {};
+    domain.miniprofiler_currentRequest = request;
+    var currentRequestExtension = {};
 
-	currentRequestExtension.startDate = Date.now();
-	currentRequestExtension.startTime = process.hrtime();
-	currentRequestExtension.stopTime = null;
-	currentRequestExtension.stepGraph = makeStep('root', currentRequestExtension.startTime, null);
-	currentRequestExtension.id = makeGuid();
+    currentRequestExtension.startDate = Date.now();
+    currentRequestExtension.startTime = process.hrtime();
+    currentRequestExtension.stopTime = null;
+    currentRequestExtension.stepGraph = makeStep('root', currentRequestExtension.startTime, null);
+    currentRequestExtension.id = makeGuid();
 
-	request.miniprofiler_extension = currentRequestExtension;
+    request.miniprofiler_extension = currentRequestExtension;
 }
 
 /*
@@ -134,34 +134,34 @@ function startProfiling(request) {
  * Note that this call must occur in the context of the domain that services this request.
  */
 function stopProfiling(){
-	var domain = getDomain('--stopProfiling');
+    var domain = getDomain('--stopProfiling');
 
-	// not profiling
-	if(!domain || !domain.miniprofiler_currentRequest) return null;
+    // not profiling
+    if(!domain || !domain.miniprofiler_currentRequest) return null;
 
-	var extension = domain.miniprofiler_currentRequest.miniprofiler_extension;
+    var extension = domain.miniprofiler_currentRequest.miniprofiler_extension;
 
-	var time = process.hrtime();
+    var time = process.hrtime();
 
-	if(extension.stepGraph.parent != null){
-		throw new Error('profiling ended while still in a function, was left in ['+extension.stepGraph.name+']');
-	}
+    if(extension.stepGraph.parent != null){
+        throw new Error('profiling ended while still in a function, was left in ['+extension.stepGraph.name+']');
+    }
 
-	extension.stopTime = time;
-	extension.stepGraph.stopTime = time;
+    extension.stopTime = time;
+    extension.stepGraph.stopTime = time;
 
-	var request = domain.miniprofiler_currentRequest;
+    var request = domain.miniprofiler_currentRequest;
 
-	// get those references gone, we can't assume much about GC here
-	delete domain.miniprofiler_currentRequest.miniprofiler_extension;
-	delete domain.miniprofiler_currentRequest;
+    // get those references gone, we can't assume much about GC here
+    delete domain.miniprofiler_currentRequest.miniprofiler_extension;
+    delete domain.miniprofiler_currentRequest;
 
-	var json = describePerformance(extension, request);
-	var ret = extension.id;
+    var json = describePerformance(extension, request);
+    var ret = extension.id;
 
-	storage(ret, JSON.stringify(json));
+    storage(ret, JSON.stringify(json));
 
-	return ret;
+    return ret;
 }
 
 /*
@@ -170,40 +170,40 @@ function stopProfiling(){
  * You should only use this method directly in cases when calls to addProfiling won't suffice.
  */
 function step(name, call) {
-	var domain = getDomain('--step: '+name);
+    var domain = getDomain('--step: '+name);
 
-	// Not profiling
-	if(!domain || !domain.miniprofiler_currentRequest) {
-		var ret = call();
-		return ret;
-	}
+    // Not profiling
+    if(!domain || !domain.miniprofiler_currentRequest) {
+        var ret = call();
+        return ret;
+    }
 
-	var time = process.hrtime();
+    var time = process.hrtime();
 
-	var extension = domain.miniprofiler_currentRequest.miniprofiler_extension;
+    var extension = domain.miniprofiler_currentRequest.miniprofiler_extension;
 
-	var newStep = makeStep(name, time, extension.stepGraph);
-	extension.stepGraph.steps.push(newStep);
-	extension.stepGraph = newStep;
+    var newStep = makeStep(name, time, extension.stepGraph);
+    extension.stepGraph.steps.push(newStep);
+    extension.stepGraph = newStep;
 
-	var failed = false;
+    var failed = false;
 
-	var result;
+    var result;
 
-	try {
-		result = call();
-	} catch(e) {
-		failed = true;
-		throw e;
-	} finally {
-		unstep(name, failed);
-	}
+    try {
+        result = call();
+    } catch(e) {
+        failed = true;
+        throw e;
+    } finally {
+        unstep(name, failed);
+    }
 
-	return result;
+    return result;
 }
 
 /*
- *	Called to time a query, like to SQL or Redis, that completes with a callback
+ *    Called to time a query, like to SQL or Redis, that completes with a callback
  *
  *  `type` can be any string, it is used to group query types in timings.
  *  `query` is a string representing the query, this is what is recorded as having run.
@@ -215,46 +215,46 @@ function step(name, call) {
  *  to have ended the query.
  */
 function timeQuery(type, query, executeFunction /*, params[] */) {
-	var time = process.hrtime();
-	var startDate = Date.now();
+    var time = process.hrtime();
+    var startDate = Date.now();
 
-	var domain = getDomain('--timeQuery: '+name);
+    var domain = getDomain('--timeQuery: '+name);
 
-	// Not profiling
-	if(!domain || !domain.miniprofiler_currentRequest) return;
+    // Not profiling
+    if(!domain || !domain.miniprofiler_currentRequest) return;
 
-	var extension = domain.miniprofiler_currentRequest.miniprofiler_extension;
+    var extension = domain.miniprofiler_currentRequest.miniprofiler_extension;
 
-	if(!extension.customTimings[type]) {
-		extension.customTimings[type] = [];
-	}
+    if(!extension.customTimings[type]) {
+        extension.customTimings[type] = [];
+    }
 
-	var customTiming = { 
-		id: makeGuid(), 
-		executeType: type, 
-		commandString: htmlEscape(query), 
-		startTime: time,
-		startDate: startDate
-	};
+    var customTiming = { 
+        id: makeGuid(), 
+        executeType: type, 
+        commandString: htmlEscape(query), 
+        startTime: time,
+        startDate: startDate
+    };
 
-	var params = Array.prototype.slice.call(arguments, 4);
+    var params = Array.prototype.slice.call(arguments, 4);
 
-	for(var i = 0; i < params.length; i++){
-		var param = params[i];
-		if(isFunction(params[i])){
-			params[i] = function() {
-				customTimings.stopTime = process.hrtime();
+    for(var i = 0; i < params.length; i++){
+        var param = params[i];
+        if(isFunction(params[i])){
+            params[i] = function() {
+                customTimings.stopTime = process.hrtime();
 
-				var ret = param.apply(this, arguments);
+                var ret = param.apply(this, arguments);
 
-				return ret;
-			};
-		}
-	}
+                return ret;
+            };
+        }
+    }
 
-	var ret = executeFunction.apply(this, params);
+    var ret = executeFunction.apply(this, params);
 
-	return ret;
+    return ret;
 }
 
 function htmlEscape(str) {
@@ -267,204 +267,204 @@ function htmlEscape(str) {
 }
 
 function unstep(name, failed) {
-	var time = process.hrtime();
+    var time = process.hrtime();
 
-	var domain = getDomain('--unstep: '+name);
+    var domain = getDomain('--unstep: '+name);
 
-	// Not profiling
-	if(!domain || !domain.miniprofiler_currentRequest) return;
+    // Not profiling
+    if(!domain || !domain.miniprofiler_currentRequest) return;
 
-	var extension = domain.miniprofiler_currentRequest.miniprofiler_extension;
+    var extension = domain.miniprofiler_currentRequest.miniprofiler_extension;
 
-	if(extension.stepGraph.name != name){
-		throw new Error('profiling stepped out of the wrong function, found ['+name+'] expected ['+extension.stepGraph.name+']');
-	}
+    if(extension.stepGraph.name != name){
+        throw new Error('profiling stepped out of the wrong function, found ['+name+'] expected ['+extension.stepGraph.name+']');
+    }
 
-	extension.stepGraph.stopTime = time;
-	if(failed) extension.failed = true;
+    extension.stepGraph.stopTime = time;
+    if(failed) extension.failed = true;
 
-	// step back up
-	extension.stepGraph = extension.stepGraph.parent;
+    // step back up
+    extension.stepGraph = extension.stepGraph.parent;
 }
 
 function makeGuid() {
-	// http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
-	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-			    var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-			    return v.toString(16);
-			});
+    // http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+                return v.toString(16);
+            });
 }
 
 function describePerformance(root, request) {
-	var ret = {};
-	
-	ret.Id = root.id;
-	ret.Name = request.url || 'Unknown';
-	ret.Started = root.startDate;
-	// This doesn't seem to be a thing in node.js
-	ret.MachineName = 'Unknown';
-	ret.Level = 'Info';
-	ret.Root = describeTimings(root.stepGraph, root.stepGraph);
-	ret.User = '';
-	ret.HasUserViewed = false;
-	ret.ClientTimings = null;
+    var ret = {};
+    
+    ret.Id = root.id;
+    ret.Name = request.url || 'Unknown';
+    ret.Started = root.startDate;
+    // This doesn't seem to be a thing in node.js
+    ret.MachineName = 'Unknown';
+    ret.Level = 'Info';
+    ret.Root = describeTimings(root.stepGraph, root.stepGraph);
+    ret.User = '';
+    ret.HasUserViewed = false;
+    ret.ClientTimings = null;
 
-	return ret;
+    return ret;
 }
 
 function diff(start, stop){
-	var deltaSecs = stop[0] - start[0];
-	var deltaNanoSecs = stop[1] - start[1];
+    var deltaSecs = stop[0] - start[0];
+    var deltaNanoSecs = stop[1] - start[1];
 
-	var elapsedMs = deltaSecs * 1000 + deltaNanoSecs / 1000000;
+    var elapsedMs = deltaSecs * 1000 + deltaNanoSecs / 1000000;
 
-	return elapsedMs;
+    return elapsedMs;
 }
 
 function describeTimings(timing, root){
-	var id = makeGuid();
-	var name = timing.name;
-	var elapsedMs = diff(timing.startTime, timing.stopTime);
-	var sinceRootMs = diff(root.startTime, timing.startTime);
-	var customTimings = describeCustomTimings(timing.customTimings);
+    var id = makeGuid();
+    var name = timing.name;
+    var elapsedMs = diff(timing.startTime, timing.stopTime);
+    var sinceRootMs = diff(root.startTime, timing.startTime);
+    var customTimings = describeCustomTimings(timing.customTimings);
 
-	var children = [];
-	for(var i = 0; i < timing.steps.length; i++){
-		var step = timing.steps[i];
-		children.push(describeTimings(step, root));
-	}
+    var children = [];
+    for(var i = 0; i < timing.steps.length; i++){
+        var step = timing.steps[i];
+        children.push(describeTimings(step, root));
+    }
 
-	return {
-		Id: id,
-		Name: name,
-		DurationMilliseconds: elapsedMs,
-		StartMilliseconds: sinceRootMs,
-		Children: children,
-		CustomTimings: customTimings
-	};
+    return {
+        Id: id,
+        Name: name,
+        DurationMilliseconds: elapsedMs,
+        StartMilliseconds: sinceRootMs,
+        Children: children,
+        CustomTimings: customTimings
+    };
 }
 
 function describeCustomTimings(customTimings) {
-	var ret = {};
-	for(var prop in customTimings) {
-		if(!customTimings.hasOwnProperty(prop)) continue;
+    var ret = {};
+    for(var prop in customTimings) {
+        if(!customTimings.hasOwnProperty(prop)) continue;
 
-		var arr = ret[prop];
-		var retArr = [];
+        var arr = ret[prop];
+        var retArr = [];
 
-		debugger;
+        debugger;
 
-		for(var i = 0; i < arr.length; i++) {
-			var timing = {};
-			timing.Id = arr[i].id;
-			timing.ExecuteType = arr[i].executeType;
-			timing.CommandString = arr[i].commandString;
-			timing.StartMilliseconds = arr[i].startDate;
-			timing.DurationMilliseconds = diff(arr[i].startTime, arr[i].stopTime);
-			timing.StackTraceSnippet = null;
-			timing.FirstFetchDurationMilliseconds = null;
+        for(var i = 0; i < arr.length; i++) {
+            var timing = {};
+            timing.Id = arr[i].id;
+            timing.ExecuteType = arr[i].executeType;
+            timing.CommandString = arr[i].commandString;
+            timing.StartMilliseconds = arr[i].startDate;
+            timing.DurationMilliseconds = diff(arr[i].startTime, arr[i].stopTime);
+            timing.StackTraceSnippet = null;
+            timing.FirstFetchDurationMilliseconds = null;
 
-			retArr.push(timing);
-		}
+            retArr.push(timing);
+        }
 
-		ret[prop] = retArr;
-	}
+        ret[prop] = retArr;
+    }
 
-	return ret;
+    return ret;
 }
 
 function getDomain(debugName){
-	if(this instanceof domain.Domain) {
-		return this;
-	}
+    if(this instanceof domain.Domain) {
+        return this;
+    }
 
-	if(domain.active) return domain.active;
+    if(domain.active) return domain.active;
 
-	return null;
+    return null;
 }
 
 function makeStep(name, time, parent){
-	return { name: name, startTime: time, stopTime: null, parent: parent, steps: [], customTimings: {} };
+    return { name: name, startTime: time, stopTime: null, parent: parent, steps: [], customTimings: {} };
 }
 
 function isObject(val) {
-	return Function.prototype.call.bind(Object.prototype.toString)(val) == '[object Object]';
+    return Function.prototype.call.bind(Object.prototype.toString)(val) == '[object Object]';
 }
 
 function isFunction(func) {
-	var getType = {};
-	return getType.toString.call(func) === '[object Function]';
+    var getType = {};
+    return getType.toString.call(func) === '[object Function]';
 }
 
 function instrument(func, defaultName) {
-	var name = func.name || defaultName || 'Unnamed';
+    var name = func.name || defaultName || 'Unnamed';
 
-	var ret = function() {
-		var toApply = func;
-		var that = this;
-		var args = Array.prototype.slice.call(arguments);
+    var ret = function() {
+        var toApply = func;
+        var that = this;
+        var args = Array.prototype.slice.call(arguments);
 
-		if(args) {
-			for(var i = 0; i < args.length; i++){
-				var arg = args[i];
-				if(arg && isFunction(arg)){
-					args[i] = instrument(arg, name+' arg #'+i);
-				}
-			}
-		}
+        if(args) {
+            for(var i = 0; i < args.length; i++){
+                var arg = args[i];
+                if(arg && isFunction(arg)){
+                    args[i] = instrument(arg, name+' arg #'+i);
+                }
+            }
+        }
 
-		return step(
-				name,
-				function() {
-					var ret = toApply.apply(that, args);
+        return step(
+                name,
+                function() {
+                    var ret = toApply.apply(that, args);
 
-					return ret;
-				}
-			);
-	};
+                    return ret;
+                }
+            );
+    };
 
-	ret.miniprofiler_instrumented = true;
+    ret.miniprofiler_instrumented = true;
 
-	return ret;
+    return ret;
 }
 
 function addProfilingImpl(toInstrument) {
-	if(toInstrument.miniprofiler_instrumented) {
-		throw new Error('already instrumented');
-	}
+    if(toInstrument.miniprofiler_instrumented) {
+        throw new Error('already instrumented');
+    }
 
-	toInstrument.miniprofiler_instrumented = true;
+    toInstrument.miniprofiler_instrumented = true;
 
-	for(var prop in toInstrument) {
-		if(!toInstrument.hasOwnProperty(prop)) continue;
+    for(var prop in toInstrument) {
+        if(!toInstrument.hasOwnProperty(prop)) continue;
 
-		var toWrap = toInstrument[prop];
+        var toWrap = toInstrument[prop];
 
-		if(!toWrap || toWrap.miniprofiler_instrumented) continue;
+        if(!toWrap || toWrap.miniprofiler_instrumented) continue;
 
-		if(Array.isArray(toWrap)){
-			for(var i = 0; i < toWrap.length; i++) {
-				var member = toWrap[i];
-				if(member.miniprofiler_instrumented) continue;
+        if(Array.isArray(toWrap)){
+            for(var i = 0; i < toWrap.length; i++) {
+                var member = toWrap[i];
+                if(member.miniprofiler_instrumented) continue;
 
-				addProfilingImpl(member);
-			}
+                addProfilingImpl(member);
+            }
 
-			continue;
-		}
+            continue;
+        }
 
-		if(isObject(toWrap)) {
-			addProfilingImpl(toWrap);
+        if(isObject(toWrap)) {
+            addProfilingImpl(toWrap);
 
-			continue;
-		}
+            continue;
+        }
 
-		if(isFunction(toWrap)) {
-			var wrappedFunc = instrument(toWrap, prop);
+        if(isFunction(toWrap)) {
+            var wrappedFunc = instrument(toWrap, prop);
 
-			toInstrument[prop] = wrappedFunc;
+            toInstrument[prop] = wrappedFunc;
 
-			continue;
-		}
-	}
+            continue;
+        }
+    }
 }

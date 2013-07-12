@@ -4,10 +4,10 @@ var domain = require('domain');
 var http = require('http');
 
 var helper = {
-	doSomething: function(arg, callback){
-		console.log(arg);
-		callback();
-	}
+    doSomething: function(arg, callback){
+        console.log(arg);
+        callback();
+    }
 };
 
 miniprofiler.configure();
@@ -15,41 +15,41 @@ miniprofiler.configure();
 helper = miniprofiler.instrument(helper);
 
 var server = http.createServer(function(request, response) {
-	var reqDomain = domain.create();
-	reqDomain.add(request);
-	reqDomain.add(response);
+    var reqDomain = domain.create();
+    reqDomain.add(request);
+    reqDomain.add(response);
 
-	request = miniprofiler.instrument(request);
-	response = miniprofiler.instrument(response);
+    request = miniprofiler.instrument(request);
+    response = miniprofiler.instrument(response);
 
-	reqDomain.run(function() {
-		miniprofiler.startProfiling(request);
+    reqDomain.run(function() {
+        miniprofiler.startProfiling(request);
 
-		response.writeHead(200, {'Content-Type': 'text/plain'});
-	  	response.write('Hello World\n');
+        response.writeHead(200, {'Content-Type': 'text/plain'});
+          response.write('Hello World\n');
 
-	  	miniprofiler.step('testing!', function() {
-	  		for(var i = 0; i < 100; i++){
-	  			miniprofiler.step('Doit', function() {
-	  				console.log('whatever'+i);
-	  			});
-	  		}
-	  	});
+          miniprofiler.step('testing!', function() {
+              for(var i = 0; i < 100; i++){
+                  miniprofiler.step('Doit', function() {
+                      console.log('whatever'+i);
+                  });
+              }
+          });
 
-	  	helper.doSomething(
-	  		'foo',
-	  		function(){
-	  			console.log('stuff!');
-	  		}
-	  	);
+          helper.doSomething(
+              'foo',
+              function(){
+                  console.log('stuff!');
+              }
+          );
 
-		response.write('\n');
+        response.write('\n');
 
-	  	var id = miniprofiler.stopProfiling();
+          var id = miniprofiler.stopProfiling();
 
-	  	response.write(id);
-	  	response.write('\n');
-	  	response.end(miniprofiler.getProfiling(id));
-  	});
+          response.write(id);
+          response.write('\n');
+          response.end(miniprofiler.getProfiling(id));
+      });
 });
 server.listen(8080, 'localhost');
