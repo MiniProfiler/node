@@ -11,6 +11,7 @@ var domain = require('domain');
 var fs = require('fs');
 var os = require('os');
 var path = require('path');
+var url = require('url');
 var qs = require('querystring');
 
 _.templateSettings = {
@@ -58,6 +59,7 @@ var configured = false;
 
 var includesDir = path.join(path.dirname(module.filename), 'ui');
 var resourcePath = '/mini-profiler-resources/';
+var version = '';
 
 // INCLUDES
 
@@ -72,7 +74,8 @@ function static(reqPath, res) {
 			res.end(JSON.stringify(err));
 			return;
 		}
-		res.setHeader("Content-Type", contentTypes[reqPath.split('.')[1]]);
+		var rs = reqPath.split('.');
+		res.setHeader("Content-Type", contentTypes[rs[rs.length - 1]]);
 		res.writeHead(200);
 		res.end(data);
 	});
@@ -90,13 +93,28 @@ function results(req, res) {
 	req.on('end', function() {
 		var post = qs.parse(body);
 		// todo: store client timings
-		var s = storage(post.id);
-		res.end(s);
+		var id = post.id || url.parse(req.url, true).query.id;
+		var s = storage(id);
+		if (post.popup == "1")
+			res.end(s);
+		else {
+			var j = JSON.parse(s);
+			res.setHeader("Content-Type", "text/html");
+			res.end(includes.share({
+				name: j.Name,
+				duration: j.DurationMilliseconds,
+				path: resourcePath,
+				json: s,
+				includes: include(id),
+				version: version
+			}));
+		}
 	});
 }
 
 var includes = {
-	partial: _.template(fs.readFileSync(path.join(includesDir, 'include.partial.html')).toString())
+	partial: _.template(fs.readFileSync(path.join(includesDir, 'include.partial.html')).toString()),
+	share: _.template(fs.readFileSync(path.join(includesDir, 'share.html')).toString())
 };
 
 // FUNCTIONS
@@ -134,20 +152,23 @@ function middleware(req, res, next) {
 	});
 }
 
-function include() {
+function include(id) {
 	var domain = getDomain('--include');
 	// not profiling
-	if(!domain || !domain.miniprofiler_currentRequest) return null;
-	var extension = domain.miniprofiler_currentRequest.miniprofiler_extension;
+	if(!id) {
+		if(!domain || !domain.miniprofiler_currentRequest) return null;
+		var extension = domain.miniprofiler_currentRequest.miniprofiler_extension;
+		id = extension.id;
+	}
 	return includes.partial({
 		path: resourcePath,
 		position: popupRenderPosition,
 		showChildren: popupShowTimeWithChildren,
 		trivialMilliseconds: trivialDurationThresholdMilliseconds,
 
-		version: '',
-		currentId: extension.id,
-		ids: extension.id,
+		version: version,
+		currentId: id,
+		ids: id,
 		showTrivial: true,
 		maxTracesToShow: 15,
 		showControls: true,
@@ -340,8 +361,8 @@ function timeQuery(type, query, executeFunction /*, params[] */) {
 
 	var extension = domain.miniprofiler_currentRequest.miniprofiler_extension;
 
-	if(!extension.customTimings[type]) {
-		extension.customTimings[type] = [];
+	if(!extension.stepGraph.customTimings[type]) {
+		extension.stepGraph.customTimings[type] = [];
 	}
 
 	var customTiming = { 
@@ -349,9 +370,10 @@ function timeQuery(type, query, executeFunction /*, params[] */) {
 		executeType: type, 
 		commandString: htmlEscape(query), 
 		startTime: time,
-		startDate: startDate
+		startDate: startDate,
+		callStack: new Error().stack
 	};
-	extension.customTimings[type].push(customTiming);
+	extension.stepGraph.customTimings[type].push(customTiming);
 
 	for(var i = 0; i < params.length; i++){
 		var param = params[i];
@@ -432,13 +454,22 @@ function diff(start, stop){
 	return elapsedMs;
 }
 
+function callStack(stack) {
+	var sp = stack.split('\n');
+	var ret = [];
+	for(var i = 2; i < sp.length; i++) {
+		var st = sp[i].trim().split(' ');
+		ret.push(st[1]);
+	}
+	return ret.join(' ');
+}
+
 function describeTimings(timing, root){
 	var id = makeGuid();
 	var name = timing.name;
 	var elapsedMs = diff(timing.startTime, timing.stopTime);
 	var sinceRootMs = diff(root.startTime, timing.startTime);
-	var customTimings = describeCustomTimings(timing.customTimings);
-	console.log('TTT', timing.customTimings);
+	var customTimings = describeCustomTimings(timing.customTimings, root);
 
 	var children = [];
 	for(var i = 0; i < timing.steps.length; i++){
@@ -456,25 +487,22 @@ function describeTimings(timing, root){
 	};
 }
 
-function describeCustomTimings(customTimings) {
+function describeCustomTimings(customTimings, root) {
 	var ret = {};
 	for(var prop in customTimings) {
 		if(!customTimings.hasOwnProperty(prop)) continue;
 
-		var arr = ret[prop];
+		var arr = customTimings[prop];
 		var retArr = [];
-
-		debugger;
 
 		for(var i = 0; i < arr.length; i++) {
 			var timing = {};
 			timing.Id = arr[i].id;
 			timing.ExecuteType = arr[i].executeType;
 			timing.CommandString = arr[i].commandString;
-			timing.StartMilliseconds = arr[i].startDate;
+			timing.StartMilliseconds = diff(root.startTime, arr[i].startDate);
 			timing.DurationMilliseconds = diff(arr[i].startTime, arr[i].stopTime);
-			timing.StackTraceSnippet = null;
-			timing.FirstFetchDurationMilliseconds = null;
+			timing.StackTraceSnippet = callStack(arr[i].callStack);
 
 			retArr.push(timing);
 		}
