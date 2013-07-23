@@ -273,7 +273,7 @@ var MiniProfiler = (function () {
         });
 
         // if option is set or all our timings are trivial, go ahead and show them
-        if (options.showTrivial || trivial.data('show-on-load')) {
+        if (trivial.length && (options.showTrivial || trivial.data('show-on-load'))) {
             toggleIt(trivial);
         }
         // if option is set, go ahead and show time with children
