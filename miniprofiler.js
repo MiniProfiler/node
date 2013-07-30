@@ -84,14 +84,7 @@ function static(reqPath, res) {
 var util = require('util');
 
 function results(req, res) {
-	var body = '';
-	req.on('data', function(data) {
-		body += data;
-		if (body.length > 1e6)
-			req.connection.destroy();
-	});
-	req.on('end', function() {
-		var post = qs.parse(body);
+	proc = function(post) {
 		// todo: store client timings
 		var id = post.id || url.parse(req.url, true).query.id;
 		var s = storage(id);
@@ -109,6 +102,20 @@ function results(req, res) {
 				version: version
 			}));
 		}
+	};
+	if(req.body) {
+		proc(req.body);
+		return;
+	}
+	var body = '';
+	req.on('data', function(data) {
+		body += data;
+		if (body.length > 1e6)
+			req.connection.destroy();
+	});
+	req.on('end', function() {
+		var post = qs.parse(body);
+		proc(post);
 	});
 }
 
