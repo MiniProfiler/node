@@ -132,31 +132,38 @@ if (typeof String.prototype.startsWith != 'function') {
 	};
 }
 
-function middleware(req, res, next) {
-	if(!configured) configure();
+function middleware(f) {
+	if(!f) f = function() { return true; };
+	return function(req, res, next) {
+		if(!f(req, res)) {
+			next();
+			return;
+		}
+		if(!configured) configure();
 
-	if(req.path.startsWith(resourcePath)) {
-		var sp = req.path.split('/');
-		var reqPath = sp[sp.length - 1];
-		if(reqPath == 'results')
-			results(req, res);
-		else
-			static(reqPath, res);
-		return;
-	}
+		if(req.path.startsWith(resourcePath)) {
+			var sp = req.path.split('/');
+			var reqPath = sp[sp.length - 1];
+			if(reqPath == 'results')
+				results(req, res);
+			else
+				static(reqPath, res);
+			return;
+		}
 
-	var reqDomain = domain.create();
-	req.miniprofiler = exports;
-	reqDomain.add(req);
-	reqDomain.add(res);
-	res.on('header', function() {
-		stopProfiling();
-	});
-	reqDomain.run(function() {
-		var id = startProfiling(req);
-		res.setHeader("X-MiniProfiler-Ids", '["' + id + '"]');
-		next();
-	});
+		var reqDomain = domain.create();
+		req.miniprofiler = exports;
+		reqDomain.add(req);
+		reqDomain.add(res);
+		res.on('header', function() {
+			stopProfiling();
+		});
+		reqDomain.run(function() {
+			var id = startProfiling(req);
+			res.setHeader("X-MiniProfiler-Ids", '["' + id + '"]');
+			next();
+		});
+	};
 }
 
 function include(id) {
