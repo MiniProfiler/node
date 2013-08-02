@@ -4,6 +4,7 @@
  *  Apache License, Version 2.0
  *
  *  Kevin Montrose, 2013
+ *  Matt Jibson, 2013
  */
 
 var _ = require('./ui/underscore.js');
