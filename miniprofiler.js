@@ -12,8 +12,8 @@ var domain = require('domain');
 var fs = require('fs');
 var os = require('os');
 var path = require('path');
-var url = require('url');
 var qs = require('querystring');
+var url = require('url');
 
 _.templateSettings = {
 	interpolate: /\{(.+?)\}/g
