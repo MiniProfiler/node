@@ -133,13 +133,14 @@ if (typeof String.prototype.startsWith != 'function') {
 function middleware(f) {
 	if(!f) f = function() { return true; };
 	return function(req, res, next) {
-		if(!f(req, res)) {
-			next();
-			return;
-		}
 		if(!configured) configure();
+		var enabled = f(req, res);
 
 		if(req.path.startsWith(resourcePath)) {
+			if (!enabled) {
+				res.send(404);
+				return;
+			}
 			var sp = req.path.split('/');
 			var reqPath = sp[sp.length - 1];
 			if(reqPath == 'results')
@@ -150,15 +151,18 @@ function middleware(f) {
 		}
 
 		var reqDomain = domain.create();
-		req.miniprofiler = exports;
 		reqDomain.add(req);
 		reqDomain.add(res);
-		res.on('header', function() {
-			stopProfiling();
-		});
+		if (enabled) {
+			res.on('header', function() {
+				stopProfiling();
+			});
+		}
 		reqDomain.run(function() {
-			var id = startProfiling(req);
-			res.setHeader("X-MiniProfiler-Ids", '["' + id + '"]');
+			var id = startProfiling(req, enabled);
+			if (enabled) {
+				res.setHeader("X-MiniProfiler-Ids", '["' + id + '"]');
+			}
 			next();
 		});
 	};
@@ -169,7 +173,7 @@ function include(id) {
 	// not profiling
 	if(!id) {
 		if(!domain || !domain.miniprofiler_currentRequest) return null;
-		var extension = domain.miniprofiler_currentRequest.miniprofiler_extension;
+		var extension = domain.miniprofiler_currentRequest.miniprofiler;
 		id = extension.id;
 	}
 	return includes.partial({
@@ -253,7 +257,7 @@ function addProfilingInstrumentation(toInstrument) {
  *
  * Note that this call must occur in the context of the domain that will service this request.
  */
-function startProfiling(request) {
+function startProfiling(request, enabled) {
 	if(!configured) throw new Error('configure() must be called before the first call to startProfiling');
 
 	var domain = getDomain('--startProfiling');
@@ -262,14 +266,28 @@ function startProfiling(request) {
 	domain.miniprofiler_currentRequest = request;
 	var currentRequestExtension = {};
 
-	currentRequestExtension.startDate = Date.now();
-	currentRequestExtension.startTime = process.hrtime();
-	currentRequestExtension.stopTime = null;
-	currentRequestExtension.stepGraph = makeStep(request.path, currentRequestExtension.startTime, null);
-	currentRequestExtension.id = makeGuid();
-	currentRequestExtension.customTimings = {};
+	if (enabled) {
+		currentRequestExtension.startDate = Date.now();
+		currentRequestExtension.startTime = process.hrtime();
+		currentRequestExtension.stopTime = null;
+		currentRequestExtension.stepGraph = makeStep(request.path, currentRequestExtension.startTime, null);
+		currentRequestExtension.id = makeGuid();
+		currentRequestExtension.customTimings = {};
+	}
+	currentRequestExtension.timeQuery = function() {
+		var args = Array.prototype.slice.call(arguments, enabled ? 0 : 3);
+		if (enabled) {
+			args.unshift(currentRequestExtension);
+			timeQueryExtension.apply(this, args);
+		} else {
+			arguments[2].apply(this, args);
+		}
+	};
+	currentRequestExtension.include = function() {
+		return enabled ? include(currentRequestExtension.id) : '';
+	};
 
-	request.miniprofiler_extension = currentRequestExtension;
+	request.miniprofiler = currentRequestExtension;
 	return currentRequestExtension.id;
 }
 
@@ -284,7 +302,7 @@ function stopProfiling(){
 	// not profiling
 	if(!domain || !domain.miniprofiler_currentRequest) return null;
 
-	var extension = domain.miniprofiler_currentRequest.miniprofiler_extension;
+	var extension = domain.miniprofiler_currentRequest.miniprofiler;
 
 	var time = process.hrtime();
 
@@ -298,7 +316,7 @@ function stopProfiling(){
 	var request = domain.miniprofiler_currentRequest;
 
 	// get those references gone, we can't assume much about GC here
-	delete domain.miniprofiler_currentRequest.miniprofiler_extension;
+	delete domain.miniprofiler_currentRequest.miniprofiler;
 	delete domain.miniprofiler_currentRequest;
 
 	var json = describePerformance(extension, request);
@@ -325,7 +343,7 @@ function step(name, call) {
 
 	var time = process.hrtime();
 
-	var extension = domain.miniprofiler_currentRequest.miniprofiler_extension;
+	var extension = domain.miniprofiler_currentRequest.miniprofiler;
 
 	var newStep = makeStep(name, time, extension.stepGraph);
 	extension.stepGraph.steps.push(newStep);
@@ -360,18 +378,22 @@ function step(name, call) {
  *  to have ended the query.
  */
 function timeQuery(type, query, executeFunction /*, params[] */) {
-	var time = process.hrtime();
-	var startDate = Date.now();
-
-	var domain = getDomain('--timeQuery: '+type);
-	var params = Array.prototype.slice.call(arguments, 3);
-
 	// Not profiling
 	if(!domain || !domain.miniprofiler_currentRequest) {
 		return executeFunction.apply(this, params);
 	}
+	var domain = getDomain('--timeQuery: '+type);
+	var extension = domain.miniprofiler_currentRequest.miniprofiler;
+	var args = Array.prototype.slice.call(arguments, 0);
+	args.unshift(extension);
+	timeQueryExtension.apply(this, args);
+}
 
-	var extension = domain.miniprofiler_currentRequest.miniprofiler_extension;
+function timeQueryExtension(extension, type, query, executeFunction) {
+	var time = process.hrtime();
+	var startDate = Date.now();
+
+	var params = Array.prototype.slice.call(arguments, 4);
 
 	if(!extension.stepGraph.customTimings[type]) {
 		extension.stepGraph.customTimings[type] = [];
@@ -422,7 +444,7 @@ function unstep(name, failed) {
 	// Not profiling
 	if(!domain || !domain.miniprofiler_currentRequest) return;
 
-	var extension = domain.miniprofiler_currentRequest.miniprofiler_extension;
+	var extension = domain.miniprofiler_currentRequest.miniprofiler;
 
 	if(extension.stepGraph.name != name){
 		throw new Error('profiling stepped out of the wrong function, found ['+name+'] expected ['+extension.stepGraph.name+']');
