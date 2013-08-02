@@ -22,11 +22,8 @@ _.templateSettings = {
 // EXPORTS
 exports.configure = configure;
 exports.instrument = addProfilingInstrumentation;
-exports.startProfiling = startProfiling;
-exports.stopProfiling = stopProfiling;
 exports.step = step;
 exports.timeQuery = timeQuery;
-exports.getProfiling = getProfiling;
 exports.profile = middleware;
 exports.include = include;
 
