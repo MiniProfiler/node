@@ -480,6 +480,10 @@ function describePerformance(root, request) {
 }
 
 function diff(start, stop){
+	if (!stop) {
+		stop = process.hrtime();
+		console.error('missing stop, using', stop);
+	}
 	var deltaSecs = stop[0] - start[0];
 	var deltaNanoSecs = stop[1] - start[1];
 
