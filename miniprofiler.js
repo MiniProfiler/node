@@ -534,7 +534,7 @@ function describeCustomTimings(customTimings, root) {
 			timing.Id = arr[i].id;
 			timing.ExecuteType = arr[i].executeType;
 			timing.CommandString = arr[i].commandString;
-			timing.StartMilliseconds = diff(root.startTime, arr[i].startDate);
+			timing.StartMilliseconds = diff(root.startTime, arr[i].startTime);
 			timing.DurationMilliseconds = diff(arr[i].startTime, arr[i].stopTime);
 			timing.StackTraceSnippet = callStack(arr[i].callStack);
 
