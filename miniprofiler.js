@@ -8,7 +8,6 @@
  */
 
 var _ = require('./ui/underscore.js');
-var domain = require('domain');
 var fs = require('fs');
 var os = require('os');
 var path = require('path');
@@ -22,10 +21,7 @@ _.templateSettings = {
 // EXPORTS
 exports.configure = configure;
 exports.instrument = addProfilingInstrumentation;
-exports.step = step;
-exports.timeQuery = timeQuery;
 exports.profile = middleware;
-exports.include = include;
 
 // GLOBALS
 var storage = function(id, json) {
@@ -149,32 +145,21 @@ function middleware(f) {
 				static(reqPath, res);
 			return;
 		}
-
-		var reqDomain = domain.create();
-		reqDomain.add(req);
-		reqDomain.add(res);
 		if (enabled) {
 			res.on('header', function() {
-				stopProfiling();
+				stopProfiling(req);
 			});
+			res.setHeader("X-MiniProfiler-Ids", '["' + id + '"]');
 		}
-		reqDomain.run(function() {
-			var id = startProfiling(req, enabled);
-			if (enabled) {
-				res.setHeader("X-MiniProfiler-Ids", '["' + id + '"]');
-			}
-			next();
-		});
+		var id = startProfiling(req, enabled);
+		next();
 	};
 }
 
 function include(id) {
-	var domain = getDomain('--include');
 	// not profiling
 	if(!id) {
-		if(!domain || !domain.miniprofiler_currentRequest) return null;
-		var extension = domain.miniprofiler_currentRequest.miniprofiler;
-		id = extension.id;
+		return null;
 	}
 	return includes.partial({
 		path: resourcePath,
@@ -197,7 +182,7 @@ function include(id) {
 /*
  * Setup profiling.  This function may only be called once, subsequent calls are ignored.
  *
- * This must be called before the first call to startProfiling, but doesn't need to be called in the context of a domain.
+ * This must be called before the first call to startProfiling.
  *
  * options is an optional object, which can have the following fields:
  *  - storage: function(id[, json]) ; called to store (if json is present) or fetch (if json is omitted) a string JSON blob of profiling information
@@ -231,9 +216,6 @@ function getProfiling(id){
  * Descends recursively, but will terminate even if there are cycles in the object graph.
  *
  * Adds `miniprofiler_instrumented` to `toInstrument`, any contained objects, and any contained functions.
- *
- * Note that to use miniprofiler you *must* be creating a new domain per request, this is necessary for request tracking
- * purposes.
  */
 function addProfilingInstrumentation(toInstrument) {
 	if(!toInstrument){
@@ -254,17 +236,13 @@ function addProfilingInstrumentation(toInstrument) {
 
 /*
  * Begins profiling the given request.
- *
- * Note that this call must occur in the context of the domain that will service this request.
  */
 function startProfiling(request, enabled) {
 	if(!configured) throw new Error('configure() must be called before the first call to startProfiling');
 
-	var domain = getDomain('--startProfiling');
-	if(!domain) return;
-
-	domain.miniprofiler_currentRequest = request;
-	var currentRequestExtension = {};
+	var currentRequestExtension = {
+		enabled: enabled
+	};
 
 	if (enabled) {
 		currentRequestExtension.startDate = Date.now();
@@ -278,9 +256,17 @@ function startProfiling(request, enabled) {
 		var args = Array.prototype.slice.call(arguments, enabled ? 0 : 3);
 		if (enabled) {
 			args.unshift(currentRequestExtension);
-			timeQueryExtension.apply(this, args);
+			timeQuery.apply(this, args);
 		} else {
 			arguments[2].apply(this, args);
+		}
+	};
+	currentRequestExtension.step = function(name, call) {
+		var args = Array.prototype.slice.call(arguments, enabled ? 0 : 2);
+		if (enabled) {
+			step(name, request, call);
+		} else {
+			call();
 		}
 	};
 	currentRequestExtension.include = function() {
@@ -293,19 +279,13 @@ function startProfiling(request, enabled) {
 
 /*
  * Stops profiling the given request.
- *
- * Note that this call must occur in the context of the domain that services this request.
  */
-function stopProfiling(){
-	var domain = getDomain('--stopProfiling');
-
+function stopProfiling(request){
 	// not profiling
-	if(!domain || !domain.miniprofiler_currentRequest) return null;
+	if (!request.miniprofiler.enabled) return null;
 
-	var extension = domain.miniprofiler_currentRequest.miniprofiler;
-
+	var extension = request.miniprofiler;
 	var time = process.hrtime();
-
 	if(extension.stepGraph.parent != null){
 		throw new Error('profiling ended while still in a function, was left in ['+extension.stepGraph.name+']');
 	}
@@ -313,11 +293,9 @@ function stopProfiling(){
 	extension.stopTime = time;
 	extension.stepGraph.stopTime = time;
 
-	var request = domain.miniprofiler_currentRequest;
-
 	// get those references gone, we can't assume much about GC here
-	delete domain.miniprofiler_currentRequest.miniprofiler;
-	delete domain.miniprofiler_currentRequest;
+	// (is the above comment still true? is this line needed? - mjibson)
+	delete request.miniprofiler
 
 	var json = describePerformance(extension, request);
 	var ret = extension.id;
@@ -332,18 +310,10 @@ function stopProfiling(){
  *
  * You should only use this method directly in cases when calls to addProfiling won't suffice.
  */
-function step(name, call) {
-	var domain = getDomain('--step: '+name);
-
-	// Not profiling
-	if(!domain || !domain.miniprofiler_currentRequest) {
-		var ret = call();
-		return ret;
-	}
-
+function step(name, request, call) {
 	var time = process.hrtime();
 
-	var extension = domain.miniprofiler_currentRequest.miniprofiler;
+	var extension = request.miniprofiler;
 
 	var newStep = makeStep(name, time, extension.stepGraph);
 	extension.stepGraph.steps.push(newStep);
@@ -359,7 +329,7 @@ function step(name, call) {
 		failed = true;
 		throw e;
 	} finally {
-		unstep(name, failed);
+		unstep(name, request, failed);
 	}
 
 	return result;
@@ -377,19 +347,7 @@ function step(name, call) {
  *  when the query has completed.  Implicitly, any execution of a callback is considered
  *  to have ended the query.
  */
-function timeQuery(type, query, executeFunction /*, params[] */) {
-	// Not profiling
-	if(!domain || !domain.miniprofiler_currentRequest) {
-		return executeFunction.apply(this, params);
-	}
-	var domain = getDomain('--timeQuery: '+type);
-	var extension = domain.miniprofiler_currentRequest.miniprofiler;
-	var args = Array.prototype.slice.call(arguments, 0);
-	args.unshift(extension);
-	timeQueryExtension.apply(this, args);
-}
-
-function timeQueryExtension(extension, type, query, executeFunction) {
+function timeQuery(extension, type, query, executeFunction) {
 	var time = process.hrtime();
 	var startDate = Date.now();
 
@@ -436,15 +394,10 @@ function htmlEscape(str) {
 			.replace(/>/g, '&gt;');
 }
 
-function unstep(name, failed) {
+function unstep(name, request, failed) {
 	var time = process.hrtime();
 
-	var domain = getDomain('--unstep: '+name);
-
-	// Not profiling
-	if(!domain || !domain.miniprofiler_currentRequest) return;
-
-	var extension = domain.miniprofiler_currentRequest.miniprofiler;
+	var extension = request.miniprofiler;
 
 	if(extension.stepGraph.name != name){
 		throw new Error('profiling stepped out of the wrong function, found ['+name+'] expected ['+extension.stepGraph.name+']');
@@ -549,16 +502,6 @@ function describeCustomTimings(customTimings, root) {
 	}
 
 	return ret;
-}
-
-function getDomain(debugName){
-	if(this instanceof domain.Domain) {
-		return this;
-	}
-
-	if(domain.active) return domain.active;
-
-	return null;
 }
 
 function makeStep(name, time, parent){
