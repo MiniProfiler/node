@@ -145,13 +145,13 @@ function middleware(f) {
 				static(reqPath, res);
 			return;
 		}
+		var id = startProfiling(req, enabled);
 		if (enabled) {
 			res.on('header', function() {
 				stopProfiling(req);
 			});
 			res.setHeader("X-MiniProfiler-Ids", '["' + id + '"]');
 		}
-		var id = startProfiling(req, enabled);
 		next();
 	};
 }
