@@ -1,6 +1,6 @@
 /*
  *  Miniprofiler implementation for node.js.
- *  
+ *
  *  Apache License, Version 2.0
  *
  *  Kevin Montrose, 2013
@@ -211,7 +211,7 @@ function getProfiling(id){
 
 /*
  * Modifies `toInstrument` such that each function has been instrumented for miniprofiler purposes.
- * 
+ *
  *
  * Descends recursively, but will terminate even if there are cycles in the object graph.
  *
@@ -357,10 +357,10 @@ function timeQuery(extension, type, query, executeFunction) {
 		extension.stepGraph.customTimings[type] = [];
 	}
 
-	var customTiming = { 
-		id: makeGuid(), 
-		executeType: type, 
-		commandString: htmlEscape(query), 
+	var customTiming = {
+		id: makeGuid(),
+		executeType: type,
+		commandString: htmlEscape(query),
 		startTime: time,
 		startDate: startDate,
 		callStack: new Error().stack
@@ -420,7 +420,7 @@ function makeGuid() {
 
 function describePerformance(root, request) {
 	var ret = {};
-	
+
 	ret.Id = root.id;
 	ret.Name = request.path;
 	ret.Started = root.startDate;
