@@ -7,7 +7,7 @@
  *  Matt Jibson, 2013
  */
 
-var _ = require('./ui/underscore.js');
+var _ = require('./underscore-min.js');
 var fs = require('fs');
 var os = require('os');
 var path = require('path');
