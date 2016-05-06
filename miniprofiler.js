@@ -22,6 +22,9 @@ _.templateSettings = {
 exports.configure = configure;
 exports.instrument = addProfilingInstrumentation;
 exports.profile = middleware;
+exports.for = {
+	pg: require('./providers/miniprofiler.pg.js')
+}
 
 // GLOBALS
 var storage = function(id, json) {
@@ -76,10 +79,8 @@ function static(reqPath, res) {
 	});
 }
 
-var util = require('util');
-
 function results(req, res) {
-	proc = function(post) {
+	var proc = function(post) {
 		// todo: store client timings
 		var id = post.id || url.parse(req.url, true).query.id;
 		var s = storage(id);
@@ -210,10 +211,6 @@ function configure(options){
 	}
 
 	configured = true;
-}
-
-function getProfiling(id){
-	return storage(id);
 }
 
 /*
