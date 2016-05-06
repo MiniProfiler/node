@@ -59,7 +59,8 @@ var version = '';
 
 var contentTypes = {
 	css: 'text/css',
-	js: 'text/javascript'
+	js: 'text/javascript',
+	tmpl: 'text/html'
 };
 function static(reqPath, res) {
 	fs.readFile(path.join(includesDir, reqPath), function(err, data) {
@@ -137,6 +138,7 @@ function middleware(f) {
 				res.send(404);
 				return;
 			}
+
 			var sp = req.path.split('/');
 			var reqPath = sp[sp.length - 1];
 			if(reqPath == 'results')
@@ -146,8 +148,13 @@ function middleware(f) {
 			return;
 		}
 		var id = startProfiling(req, enabled);
+
+		res.locals.miniprofiler = enabled ? req.miniprofiler : {
+			include: function() { return '' }
+		}
+
 		if (enabled) {
-			res.on('header', function() {
+			res.on('finish', function() {
 				stopProfiling(req);
 			});
 			res.setHeader("X-MiniProfiler-Ids", '["' + id + '"]');

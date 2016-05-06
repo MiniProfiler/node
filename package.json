@@ -11,7 +11,11 @@
     "url": "https://github.com/MiniProfiler/node.git"
   },
   "author": "",
-  "license": "Apache 2.0",
+  "license": "Apache-2.0",
   "readmeFilename": "README.md",
-  "gitHead": "2a757088d0ee39fb7ecd68edaf80a4527b077848"
+  "devDependencies": {
+    "express": "^4.13.4",
+    "pg": "^4.5.5",
+    "pug": "^2.0.0-alpha6"
+  }
 }
