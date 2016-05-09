@@ -1,10 +1,11 @@
 /*
- *  Miniprofiler implementation for node.js.
+ *  MiniProfiler implementation for node.js.
  *
  *  Apache License, Version 2.0
  *
- *  Kevin Montrose, 2013
- *  Matt Jibson, 2013
+ *  Kevin Montrose, 2013 @kevin-montrose
+ *  Matt Jibson, 2013 @mjibson
+ *  Guilherme Oenning, 2016 @goenning
  */
 
 var _ = require('./underscore-min.js');
@@ -24,7 +25,7 @@ exports.instrument = addProfilingInstrumentation;
 exports.profile = middleware;
 exports.for = {
 	pg: require('./providers/miniprofiler.pg.js')
-}
+};
 
 // GLOBALS
 var storage = function(id, json) {
@@ -48,6 +49,7 @@ var storage = function(id, json) {
 
 	return null;
 };
+
 var ignoredPaths = [];
 var trivialDurationThresholdMilliseconds = 2.5;
 var popupShowTimeWithChildren = false;
@@ -121,7 +123,6 @@ var includes = {
 };
 
 // FUNCTIONS
-
 if (typeof String.prototype.startsWith != 'function') {
 	String.prototype.startsWith = function (str){
 		return this.slice(0, str.length) == str;
@@ -151,8 +152,8 @@ function middleware(f) {
 		var id = startProfiling(req, enabled);
 
 		res.locals.miniprofiler = enabled ? req.miniprofiler : {
-			include: function() { return '' }
-		}
+			include: function() { return ''; }
+		};
 
 		if (enabled) {
 			res.on('finish', function() {
@@ -266,7 +267,7 @@ function startProfiling(request, enabled) {
 		}
 	};
 	currentRequestExtension.step = function(name, call) {
-		var args = Array.prototype.slice.call(arguments, enabled ? 0 : 2);
+		//var args = Array.prototype.slice.call(arguments, enabled ? 0 : 2);
 		if (enabled) {
 			step(name, request, call);
 		} else {
@@ -299,7 +300,7 @@ function stopProfiling(request){
 
 	// get those references gone, we can't assume much about GC here
 	// (is the above comment still true? is this line needed? - mjibson)
-	delete request.miniprofiler
+	delete request.miniprofiler;
 
 	var json = describePerformance(extension, request);
 	var ret = extension.id;

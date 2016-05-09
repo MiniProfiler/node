@@ -4,7 +4,8 @@
   "description": "A simple but effective mini-profiler.",
   "main": "miniprofiler.js",
   "scripts": {
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "mocha tests/"
   },
   "repository": {
     "type": "git",
@@ -14,11 +15,13 @@
   "license": "Apache-2.0",
   "readmeFilename": "README.md",
   "devDependencies": {
+    "chai": "^3.5.0",
     "eslint": "^2.9.0",
     "express": "^4.13.4",
     "mocha": "^2.4.5",
     "pg": "^4.5.5",
     "pug": "^2.0.0-alpha6",
-    "redis": "^2.6.0-2"
+    "redis": "^2.6.0-2",
+    "request": "^2.72.0"
   }
 }
