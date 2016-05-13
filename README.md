@@ -26,3 +26,4 @@ Things to do:
 - add examples for every provider
 - add more providers (mongodb, mysql, redis)
 - remove old ids from global storage
+- add eslint to travis
