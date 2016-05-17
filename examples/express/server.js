@@ -1,4 +1,4 @@
-var miniprofiler = require('../../miniprofiler.js');
+var miniprofiler = require('../../lib/miniprofiler.js');
 var pg = require('pg');
 
 var express = require('express');
@@ -18,9 +18,7 @@ app.get('/', function (req, res) {
 app.get('/multi-query', function (req, res) {
 	pg.connect(connString, function (err, client, done) {
 		client.query('SELECT pg_sleep(1)', [], function (err, result) {
-			console.log(result);
 			client.query('SELECT $1::int AS number', ['2'], function (err, result) {
-				console.log(result);
 				done();
 				res.render('multi-query');
 			});

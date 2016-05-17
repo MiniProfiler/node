@@ -1,13 +1,13 @@
-var miniprofiler = require('../miniprofiler.js');
+var miniprofiler = require('../lib/miniprofiler.js');
 var express = require('express');
 var request = require('request');
 
 var app = express();
 var server;
 
-var enableMiniProfiler = (req, res) => {
-  return req.url != '/unprofiled'
-}
+var enableMiniProfiler = (req) => {
+  return req.url != '/unprofiled';
+};
 
 app.use(miniprofiler.profile(enableMiniProfiler));
 
@@ -17,14 +17,14 @@ app.get('/', (req, res) => {
 
 app.get('/step', (req, res) => {
   req.miniprofiler.step('Step 1', () => {
-  	res.send();
+    res.send();
   });
 });
 
 app.get('/step-two', (req, res) => {
   req.miniprofiler.step('Step 1', () => {
     req.miniprofiler.step('Step 2', () => {
-    	res.send();
+      res.send();
     });
   });
 });

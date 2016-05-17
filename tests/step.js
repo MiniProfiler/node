@@ -1,18 +1,17 @@
 var expect = require('chai').expect;
-var miniprofiler = require('../miniprofiler.js');
-var server = require('./demo-server.js');
+var server = require('./demo-express-server.js');
 
 describe('MiniProfiler Step Tests', function() {
   before(server.start);
   after(server.stop);
 
   it('Index route should not profile any step', function(done) {
-    server.get('/', (err, response, body) => {
+    server.get('/', (err, response) => {
       var ids = JSON.parse(response.headers['x-miniprofiler-ids']);
       expect(ids).to.have.lengthOf(1);
 
       server.post('/mini-profiler-resources/results', { id: ids[0], popup: 1 }, (err, response, body) => {
-        var result = JSON.parse(body)
+        var result = JSON.parse(body);
         expect(result.Id).to.equal(ids[0]);
         expect(result.Name).to.equal('/');
         expect(result.Root.Children).to.be.empty;
@@ -23,12 +22,12 @@ describe('MiniProfiler Step Tests', function() {
   });
 
   it('step route should profile one step', function(done) {
-    server.get('/step', (err, response, body) => {
+    server.get('/step', (err, response) => {
       var ids = JSON.parse(response.headers['x-miniprofiler-ids']);
       expect(ids).to.have.lengthOf(1);
 
       server.post('/mini-profiler-resources/results', { id: ids[0], popup: 1 }, (err, response, body) => {
-        var result = JSON.parse(body)
+        var result = JSON.parse(body);
         expect(result.Id).to.equal(ids[0]);
         expect(result.Name).to.equal('/step');
         expect(result.Root.Children).to.have.lengthOf(1);
@@ -42,12 +41,12 @@ describe('MiniProfiler Step Tests', function() {
   });
 
   it('step-two route should profile two nested step', function(done) {
-    server.get('/step-two', (err, response, body) => {
+    server.get('/step-two', (err, response) => {
       var ids = JSON.parse(response.headers['x-miniprofiler-ids']);
       expect(ids).to.have.lengthOf(1);
 
       server.post('/mini-profiler-resources/results', { id: ids[0], popup: 1 }, (err, response, body) => {
-        var result = JSON.parse(body)
+        var result = JSON.parse(body);
         expect(result.Id).to.equal(ids[0]);
         expect(result.Name).to.equal('/step-two');
         expect(result.Root.Children).to.have.lengthOf(1);

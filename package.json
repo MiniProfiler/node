@@ -2,10 +2,11 @@
   "name": "miniprofiler",
   "version": "0.0.8",
   "description": "A simple but effective mini-profiler.",
-  "main": "miniprofiler.js",
+  "main": "lib/miniprofiler.js",
   "scripts": {
     "lint": "eslint .",
-    "test": "mocha tests/"
+    "test": "mocha tests/",
+    "coverage": "istanbul cover node_modules/mocha/bin/_mocha tests/"
   },
   "repository": {
     "type": "git",
@@ -14,10 +15,14 @@
   "author": "",
   "license": "Apache-2.0",
   "readmeFilename": "README.md",
+  "dependencies": {
+    "underscore": "1.5.2"
+  },
   "devDependencies": {
     "chai": "^3.5.0",
     "eslint": "^2.9.0",
     "express": "^4.13.4",
+    "istanbul": "^0.4.3",
     "mocha": "^2.4.5",
     "pg": "^4.5.5",
     "pug": "^2.0.0-alpha6",
