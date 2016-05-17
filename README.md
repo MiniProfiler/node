@@ -21,9 +21,9 @@ Things to do:
 - remove dependency from express and connect
 - storing of client timings on first result postback (there's a todo in the `results` function about where to do this)
 - document more things
-- tests for everything
-- add examples for every frameworks
+- better unit test code coverage for everything
+- add examples for every web frameworks
 - add examples for every provider
 - add more providers (mongodb, mysql, redis)
-- remove old ids from global storage
+- remove old ids from global storage (when?)
 - add eslint to travis

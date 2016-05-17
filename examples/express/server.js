@@ -17,8 +17,8 @@ app.get('/', function (req, res) {
 
 app.get('/multi-query', function (req, res) {
 	pg.connect(connString, function (err, client, done) {
-		client.query('SELECT pg_sleep(1)', [], function (err, result) {
-			client.query('SELECT $1::int AS number', ['2'], function (err, result) {
+		client.query('SELECT pg_sleep(1)', [], function (err) {
+			client.query('SELECT $1::int AS number', ['2'], function (err) {
 				done();
 				res.render('multi-query');
 			});

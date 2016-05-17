@@ -16,6 +16,7 @@
   "license": "Apache-2.0",
   "readmeFilename": "README.md",
   "dependencies": {
+    "node-uuid": "^1.4.7",
     "underscore": "1.5.2"
   },
   "devDependencies": {

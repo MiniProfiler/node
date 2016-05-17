@@ -10,7 +10,7 @@ describe('MiniProfiler Static Assets Tests', function() {
     'includes.css',
     'includes.tmpl',
     'includes.js'
-  ]
+  ];
 
   files.forEach((file) => {
     it(`Should return ${file} file`, function(done) {
