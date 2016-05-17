@@ -6,6 +6,7 @@
     "mocha": true
   },
   "rules": {
-    "semi": [2, "always"]
+    "semi": [2, "always"],
+    "no-unused-vars": ["error", { "vars": "all", "args": "none" }]
   }
 }

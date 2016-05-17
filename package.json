@@ -5,8 +5,7 @@
   "main": "lib/miniprofiler.js",
   "scripts": {
     "lint": "eslint .",
-    "test": "mocha tests/",
-    "coverage": "istanbul cover node_modules/mocha/bin/_mocha tests/"
+    "test": "istanbul cover node_modules/mocha/bin/_mocha tests/"
   },
   "repository": {
     "type": "git",
@@ -16,6 +15,7 @@
   "license": "Apache-2.0",
   "readmeFilename": "README.md",
   "dependencies": {
+    "debug": "^2.2.0",
     "node-uuid": "^1.4.7",
     "underscore": "1.5.2"
   },
