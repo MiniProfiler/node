@@ -5,7 +5,9 @@
   "main": "lib/miniprofiler.js",
   "scripts": {
     "lint": "eslint .",
-    "test": "istanbul cover node_modules/mocha/bin/_mocha tests/",
+    "test": "mocha tests/",
+    "test:watch": "mocha tests/ --watch",
+    "coverage": "istanbul cover node_modules/mocha/bin/_mocha tests/",
     "example": "node examples/express/server.js"
   },
   "repository": {

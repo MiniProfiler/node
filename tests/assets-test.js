@@ -24,7 +24,7 @@ describe('MiniProfiler Assets Tests', function() {
   it('Unknown file should return 404', function(done) {
     server.get('/mini-profiler-resources/unkown.js', (err, response, body) => {
       expect(response.statusCode).to.be.equal(404);
-      expect(response.headers['content-type']).to.be.equal('text/html');
+      expect(response.headers['content-type']).to.be.equal('text/plain');
       expect(body).to.be.equal('Resource unavailable.');
       done();
     });

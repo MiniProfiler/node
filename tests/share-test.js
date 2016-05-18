@@ -13,7 +13,7 @@ describe('MiniProfiler Share Tests', function() {
 
   var expectNotFoundResponse = (done) => (err, response, body) => {
     expect(response.statusCode).to.be.equal(404);
-    expect(response.headers['content-type']).to.be.equal('text/html');
+    expect(response.headers['content-type']).to.be.equal('text/plain');
     done();
   };
 
