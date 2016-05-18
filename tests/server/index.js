@@ -1,4 +1,4 @@
-var miniprofiler = require('../lib/miniprofiler.js');
+var miniprofiler = require('../../lib/miniprofiler.js');
 var express = require('express');
 var request = require('request');
 

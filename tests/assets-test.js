@@ -2,7 +2,7 @@ var expect = require('chai').expect;
 var server = require('./server');
 var fs = require('fs');
 
-describe('MiniProfiler Static Assets Tests', function() {
+describe('MiniProfiler Assets Tests', function() {
   before(server.start);
   after(server.stop);
 
