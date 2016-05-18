@@ -11,14 +11,14 @@ app.use(miniprofiler.for.pg(pg));
 app.set('view engine', 'pug');
 app.set('views', './examples/views');
 
-app.get('/', function (req, res) {
+app.get('/', function(req, res) {
 	res.render('home');
 });
 
-app.get('/multi-query', function (req, res) {
-	pg.connect(connString, function (err, client, done) {
-		client.query('SELECT pg_sleep(1)', [], function (err, result) {
-			client.query('SELECT $1::int AS number', ['2'], function (err, result) {
+app.get('/multi-query', function(req, res) {
+	pg.connect(connString, function(err, client, done) {
+		client.query('SELECT pg_sleep(1)', [], function(err, result) {
+			client.query('SELECT $1::int AS number', ['2'], function(err, result) {
 				done();
 				res.render('multi-query');
 			});
