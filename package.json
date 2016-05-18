@@ -21,12 +21,12 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
-    "eslint": "^2.9.0",
+    "eslint": "^2.10.2",
     "express": "^4.13.4",
     "istanbul": "^0.4.3",
     "mocha": "^2.4.5",
     "pg": "^4.5.5",
-    "pug": "^2.0.0-alpha6",
+    "pug": "^2.0.0-alpha7",
     "redis": "^2.6.0-2",
     "request": "^2.72.0"
   }
