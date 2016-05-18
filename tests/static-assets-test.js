@@ -1,5 +1,5 @@
 var expect = require('chai').expect;
-var server = require('./demo-express-server.js');
+var server = require('./server');
 var fs = require('fs');
 
 describe('MiniProfiler Static Assets Tests', function() {

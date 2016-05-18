@@ -1,5 +1,5 @@
 var expect = require('chai').expect;
-var server = require('./demo-express-server.js');
+var server = require('./server');
 
 describe('MiniProfiler Tests', function() {
   before(server.start);
