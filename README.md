@@ -12,7 +12,10 @@ Currently requires express and connect to run, because it uses `res.on('header',
 
 Clone this repo into your project's node_modules directory. You can also install from npm, but the package may be outdated: https://www.npmjs.org/package/miniprofiler.
 
-Then see [examples/express/server.js](/blob/master/examples/express/server.js) for example use.
+Then see [examples/express/server.js](/examples/express/server.js) for example use.
+
+![](/examples/example1.png)
+![](/examples/example2.png)
 
 # Want to help?
 
@@ -27,3 +30,4 @@ Things to do:
 - add more providers (mongodb, mysql, redis)
 - remove old ids from global storage (when?)
 - add eslint to travis
+- better eslint (https://github.com/NodeRedis/node_redis/blob/master/.eslintrc)
