@@ -24,15 +24,9 @@ app.get('/step-two', (req, res) => {
 });
 
 app.get('/js-sleep', function(req, res) {
-	var waitBeforeRender = function(ms) {
-		setTimeout(function() {
-    	res.send();
-		}, ms());
-	}
-
-	req.miniprofiler.timeQuery('custom', 'Sleeping...', waitBeforeRender, function() {
-		return 300
-	});
+	req.miniprofiler.timeQuery('custom', 'Sleeping...', setTimeout, function() {
+		res.send();
+	}, 300);
 });
 
 module.exports = require('./base.js')(app);

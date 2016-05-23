@@ -25,9 +25,10 @@ describe('MiniProfiler Tests', function() {
         expect(result.Root.Children).to.be.empty;
         expect(result.Root.CustomTimings).to.have.property('custom');
         expect(result.Root.CustomTimings.custom).to.have.lengthOf(1);
-        expect(result.Root.CustomTimings.custom[0].ExecuteType).to.be.equal('custom')
-        expect(result.Root.CustomTimings.custom[0].CommandString).to.be.equal('Sleeping...')
-        expect(result.Root.CustomTimings.custom[0].DurationMilliseconds).to.be.above(result.DurationMilliseconds);
+
+        expect(result.Root.CustomTimings.custom[0].ExecuteType).to.be.equal('custom');
+        expect(result.Root.CustomTimings.custom[0].CommandString).to.be.equal('Sleeping...');
+        expect(result.Root.CustomTimings.custom[0].DurationMilliseconds).to.be.below(result.DurationMilliseconds);
         done();
       });
     });

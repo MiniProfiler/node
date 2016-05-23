@@ -22,10 +22,10 @@ app.get('/js-sleep', function(req, res) {
 		setTimeout(function() {
 			res.render('home');
 		}, ms());
-	}
+	};
 
 	req.miniprofiler.timeQuery('custom', 'Sleeping...', waitBeforeRender, function() {
-		return 300
+		return 300;
 	});
 });
 

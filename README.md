@@ -21,13 +21,9 @@ Then see [examples/express/server.js](/examples/express/server.js) for example u
 
 Things to do:
 
-- remove dependency from express and connect
+- support major web frameworks like: Express, Hapi, koa.js, Sails.js
+- add examples for every web frameworks
 - storing of client timings on first result postback (there's a todo in the `results` function about where to do this)
 - document more things
-- better unit test code coverage for everything
-- add examples for every web frameworks
-- add examples for every provider
-- add more providers (mongodb, mysql, redis)
-- remove old ids from global storage (when?)
+- add providers for pg, mongodb, mysql, redis and more
 - add eslint to travis
-- better eslint (https://github.com/NodeRedis/node_redis/blob/master/.eslintrc)
