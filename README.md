@@ -2,6 +2,9 @@
 
 Node.js implementation of Stack Exchange's MiniProfiler
 
+[![Build Status](https://travis-ci.org/goenning/miniprofiler-node.png)](https://travis-ci.org/goenning/miniprofiler-node)
+[![Coverage Status](https://coveralls.io/repos/github/goenning/miniprofiler-node/badge.svg?branch=master)](https://coveralls.io/github/goenning/miniprofiler-node?branch=master)
+![Dependencies](https://david-dm.org/goenning/miniprofiler-node.svg)
 ### This is working, but not yet considered production ready. Use with caution.
 
 # requirements
@@ -26,4 +29,6 @@ Things to do:
 - storing of client timings on first result postback (there's a todo in the `results` function about where to do this)
 - document more things
 - add providers for pg, mongodb, mysql, redis and more
-- add eslint to travis
+- add coverage badge
+- add npm package version badge
+- add dependencies status badge
