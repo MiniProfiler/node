@@ -5,6 +5,7 @@ pids
 *.pid
 *.seed
 *.rdb
+*.DS_STORE
 lib-cov
 coverage
 .nyc_output
