@@ -7,7 +7,7 @@ var disableMiniProfiler = (req) => {
   return false;
 };
 
-app.use(miniprofiler.profile(disableMiniProfiler));
+app.use(miniprofiler.express(disableMiniProfiler));
 
 app.get('/', (req, res) => {
 	res.send();

@@ -3,7 +3,7 @@ var express = require('express');
 
 var app = express();
 
-app.use(miniprofiler.profile());
+app.use(miniprofiler.express());
 
 app.get('/', (req, res) => {
 	res.send();
