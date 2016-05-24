@@ -5,7 +5,7 @@ Node.js implementation of Stack Exchange's MiniProfiler
 [![Build](https://travis-ci.org/goenning/miniprofiler-node.svg)](https://travis-ci.org/goenning/miniprofiler-node)
 [![Coverage](https://coveralls.io/repos/github/goenning/miniprofiler-node/badge.svg?branch=master)](https://coveralls.io/github/goenning/miniprofiler-node?branch=master)
 ![Dependencies](https://david-dm.org/goenning/miniprofiler-node.svg)
-![devDependencies](https://david-dm.org/goenning/miniprofiler-node.svg#info=devDependencies)
+![devDependencies](https://david-dm.org/goenning/miniprofiler-node/dev-status.svg#info=devDependencies)
 
 ### This is working, but not yet considered production ready. Use with caution.
 
