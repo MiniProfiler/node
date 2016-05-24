@@ -1,3 +1,5 @@
+##### `The project is still under development, the API will change! Use with caution. NPM package is currently outdated.`
+
 # node-miniprofiler
 
 Node.js implementation of Stack Exchange's MiniProfiler
@@ -6,8 +8,6 @@ Node.js implementation of Stack Exchange's MiniProfiler
 [![Coverage](https://coveralls.io/repos/github/goenning/miniprofiler-node/badge.svg?branch=master)](https://coveralls.io/github/goenning/miniprofiler-node?branch=master)
 ![Dependencies](https://david-dm.org/goenning/miniprofiler-node.svg)
 ![devDependencies](https://david-dm.org/goenning/miniprofiler-node/dev-status.svg#info=devDependencies)
-
-### This is working, but not yet considered production ready. Use with caution.
 
 ## Installation (via [npm](https://npmjs.org/package/miniprofiler))
 
