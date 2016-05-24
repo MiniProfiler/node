@@ -1,23 +1,72 @@
+##### `The project is still under development, the API will change! Use with caution. NPM package is currently outdated.`
+
 # node-miniprofiler
 
 Node.js implementation of Stack Exchange's MiniProfiler
 
-### This is working but not yet considered production ready. Use with caution.
+[![Build](https://travis-ci.org/goenning/miniprofiler-node.svg)](https://travis-ci.org/goenning/miniprofiler-node)
+[![Coverage](https://coveralls.io/repos/github/goenning/miniprofiler-node/badge.svg?branch=master)](https://coveralls.io/github/goenning/miniprofiler-node?branch=master)
+![Dependencies](https://david-dm.org/goenning/miniprofiler-node.svg)
+![devDependencies](https://david-dm.org/goenning/miniprofiler-node/dev-status.svg#info=devDependencies)
 
-# requirements
+## Installation (via [npm](https://npmjs.org/package/miniprofiler))
 
-Currently requires express and connect to run, because it uses `res.on('header', f)` to trigger storing of data, which is a connect thing.
+```bash
+$ npm install miniprofiler
+```
 
-# usage
+## Usage
 
-Clone this repo into your project's node_modules directory. You can also install from npm, but the package may be outdated: https://www.npmjs.org/package/miniprofiler.
+### Simple usage using express.js
 
-Then see [connect_test.js](https://github.com/MiniProfiler/node/blob/master/connect_test.js) for example use.
+`server.js`
+
+```javascript
+var express = require('express')
+  , miniprofiler = require('miniprofiler')
+  , app = express();
+
+app.set('view engine', 'pug');
+app.use(miniprofiler.profile());
+
+app.get('/', function(req, res) {
+  req.miniprofiler.step('Step 1', function() {
+    req.miniprofiler.step('Step 2', function() {
+      res.render('home');
+    });
+  });
+});
+
+app.listen(8080);
+```
+
+`home.pug`
+
+```javascript
+doctype html
+html
+  head
+    title MiniProfiler Node.js Example
+  body
+    h1 Home Page
+    | !{miniprofiler.include()}
+```
+
+When visiting `localhost:8080`, you should see this.
+
+![](/examples/images/example0.png)
+
+See [examples/express.js](/examples/express.js) for more examples.
+
+![](/examples/images/example1.png)
+![](/examples/images/example2.png)
 
 # Want to help?
 
-Things that need doing:
+Things to do:
 
-- remove dependency from express and connect
+- support major web frameworks like: Express, Hapi, koa.js, Sails.js
+- add examples for every web frameworks
 - storing of client timings on first result postback (there's a todo in the `results` function about where to do this)
 - document more things
+- add providers for pg, mongodb, mysql, redis and more

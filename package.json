@@ -2,16 +2,39 @@
   "name": "miniprofiler",
   "version": "0.0.8",
   "description": "A simple but effective mini-profiler.",
-  "main": "miniprofiler.js",
+  "main": "lib/miniprofiler.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint .",
+    "test": "mocha tests/",
+    "test:watch": "mocha tests/ --watch",
+    "example": "node examples/express.js",
+    "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- tests/ -R spec",
+    "check-coverage": "istanbul check-coverage --statements 70 --branches 70 --functions 70 --lines 70",
+    "update-coveralls": "cat coverage/lcov.info | node ./node_modules/coveralls/bin/coveralls.js"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/MiniProfiler/node.git"
   },
   "author": "",
-  "license": "Apache 2.0",
+  "license": "Apache-2.0",
   "readmeFilename": "README.md",
-  "gitHead": "2a757088d0ee39fb7ecd68edaf80a4527b077848"
+  "dependencies": {
+    "debug": "^2.2.0",
+    "node-uuid": "^1.4.7",
+    "underscore": "1.5.2"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "coveralls": "^2.11.9",
+    "eslint": "^2.10.2",
+    "express": "^4.13.4",
+    "istanbul": "^0.4.3",
+    "koa": "^1.2.0",
+    "mocha": "^2.4.5",
+    "pg": "^4.5.5",
+    "pug": "^2.0.0-alpha7",
+    "redis": "^2.6.0-2",
+    "request": "^2.72.0"
+  }
 }
