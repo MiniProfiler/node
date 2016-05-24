@@ -7,7 +7,7 @@
     "lint": "eslint .",
     "test": "mocha tests/",
     "test:watch": "mocha tests/ --watch",
-    "example": "node examples/express/server.js",
+    "example": "node examples/express.js",
     "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- tests/ -R spec",
     "check-coverage": "istanbul check-coverage --statements 70 --branches 70 --functions 70 --lines 70",
     "update-coveralls": "cat coverage/lcov.info | node ./node_modules/coveralls/bin/coveralls.js"

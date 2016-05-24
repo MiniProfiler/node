@@ -1,5 +1,5 @@
 var http = require('http');
-var miniprofiler = require('../../lib/miniprofiler.js');
+var miniprofiler = require('../lib/miniprofiler.js');
 
 var profile = miniprofiler.profile();
 

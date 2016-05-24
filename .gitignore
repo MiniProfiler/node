@@ -4,6 +4,7 @@ npm-debug.log*
 pids
 *.pid
 *.seed
+*.rdb
 lib-cov
 coverage
 .nyc_output

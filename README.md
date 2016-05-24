@@ -2,23 +2,64 @@
 
 Node.js implementation of Stack Exchange's MiniProfiler
 
-[![Build Status](https://travis-ci.org/goenning/miniprofiler-node.png)](https://travis-ci.org/goenning/miniprofiler-node)
-[![Coverage Status](https://coveralls.io/repos/github/goenning/miniprofiler-node/badge.svg?branch=master)](https://coveralls.io/github/goenning/miniprofiler-node?branch=master)
+[![Build](https://travis-ci.org/goenning/miniprofiler-node.svg)](https://travis-ci.org/goenning/miniprofiler-node)
+[![Coverage](https://coveralls.io/repos/github/goenning/miniprofiler-node/badge.svg?branch=master)](https://coveralls.io/github/goenning/miniprofiler-node?branch=master)
 ![Dependencies](https://david-dm.org/goenning/miniprofiler-node.svg)
+![devDependencies](https://david-dm.org/goenning/miniprofiler-node.svg#info=devDependencies)
+
 ### This is working, but not yet considered production ready. Use with caution.
 
-# requirements
+## Installation (via [npm](https://npmjs.org/package/miniprofiler))
 
-Currently requires express and connect to run, because it uses `res.on('header', f)` to trigger storing of data, which is a connect thing.
+```bash
+$ npm install miniprofiler
+```
 
-# usage
+## Usage
 
-Clone this repo into your project's node_modules directory. You can also install from npm, but the package may be outdated: https://www.npmjs.org/package/miniprofiler.
+### Simple usage using express.js
 
-Then see [examples/express/server.js](/examples/express/server.js) for example use.
+`server.js`
 
-![](/examples/example1.png)
-![](/examples/example2.png)
+```javascript
+var express = require('express')
+  , miniprofiler = require('miniprofiler')
+  , app = express();
+
+app.set('view engine', 'pug');
+app.use(miniprofiler.profile());
+
+app.get('/', function(req, res) {
+  req.miniprofiler.step('Step 1', function() {
+    req.miniprofiler.step('Step 2', function() {
+      res.render('home');
+    });
+  });
+});
+
+app.listen(8080);
+```
+
+`home.pug`
+
+```javascript
+doctype html
+html
+  head
+    title MiniProfiler Node.js Example
+  body
+    h1 Home Page
+    | !{miniprofiler.include()}
+```
+
+When visiting `localhost:8080`, you should see this.
+
+![](/examples/images/example0.png)
+
+See [examples/express.js](/examples/express.js) for more examples.
+
+![](/examples/images/example1.png)
+![](/examples/images/example2.png)
 
 # Want to help?
 
@@ -29,6 +70,3 @@ Things to do:
 - storing of client timings on first result postback (there's a todo in the `results` function about where to do this)
 - document more things
 - add providers for pg, mongodb, mysql, redis and more
-- add coverage badge
-- add npm package version badge
-- add dependencies status badge

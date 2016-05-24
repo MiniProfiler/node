@@ -1,4 +1,4 @@
-var miniprofiler = require('../../lib/miniprofiler.js');
+var miniprofiler = require('../lib/miniprofiler.js');
 var pg = require('pg');
 var redis = require('redis');
 
@@ -10,29 +10,28 @@ app.use(miniprofiler.profile());
 app.use(miniprofiler.for.pg(pg));
 app.use(miniprofiler.for.redis(redis));
 
+	var redisClient = redis.createClient();
+
 app.set('view engine', 'pug');
 app.set('views', './examples/views');
 
 app.get('/', function(req, res) {
-	res.render('home');
+  req.miniprofiler.step('Step 1', function() {
+    req.miniprofiler.step('Step 2', function() {
+      res.render('home');
+    });
+  });
 });
 
 app.get('/js-sleep', function(req, res) {
-	var waitBeforeRender = function(ms) {
-		setTimeout(function() {
-			res.render('home');
-		}, ms());
-	};
-
-	req.miniprofiler.timeQuery('custom', 'Sleeping...', waitBeforeRender, function() {
-		return 300;
-	});
+	req.miniprofiler.timeQuery('custom', 'Sleeping...', setTimeout, function() {
+		res.send();
+	}, 300);
 });
 
 app.get('/redis-set-get', function(req, res) {
-	var redisClient = redis.createClient();
   redisClient.set('customer', 'john@domain.com', function() {
-    redisClient.get('key', function(err, reply) {
+    redisClient.get('customer', function(err, reply) {
       res.render('home');
     });
   });
@@ -48,7 +47,6 @@ app.get('/pg-sleep', function(req, res) {
 });
 
 app.get('/all', function(req, res) {
-	var redisClient = redis.createClient();
   req.miniprofiler.step('Waiting 1 second', function() {
 
     pg.connect(connString, function(err, pgClient, done) {
