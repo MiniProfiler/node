@@ -1,10 +1,10 @@
 var expect = require('chai').expect;
+var servers = require('./servers');
 
-for (var fw of ['express', 'koa']) {
-  var server = require(`./server/${fw}/default`);
+for (var server of servers) {
 
-  describe(`[${fw}] MiniProfiler Share Tests`, function() {
-    before(server.start);
+  describe(`[${server.framework}] MiniProfiler Share Tests`, function() {
+    before(server.start.bind(null, 'default'));
     after(server.stop);
 
     var expectOkResponse = (done) => (err, response, body) => {

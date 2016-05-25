@@ -13,4 +13,4 @@ app.get('/', (req, res) => {
 	res.send();
 });
 
-module.exports = require('../base.js')(app);
+module.exports = app;

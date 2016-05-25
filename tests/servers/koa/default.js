@@ -28,8 +28,8 @@ app.use(route.get('/js-sleep', function *(){
     this.req.miniprofiler.timeQuery('custom', 'Sleeping...', setTimeout, function() {
       this.body = '';
       resolve();
-    }, 300);
+    }, 50);
   });
 }));
 
-module.exports = require('../base.js')(app);
+module.exports = app;

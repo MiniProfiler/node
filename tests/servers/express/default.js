@@ -26,7 +26,7 @@ app.get('/step-two', (req, res) => {
 app.get('/js-sleep', function(req, res) {
 	req.miniprofiler.timeQuery('custom', 'Sleeping...', setTimeout, function() {
 		res.send();
-	}, 300);
+	}, 50);
 });
 
-module.exports = require('../base.js')(app);
+module.exports = app;

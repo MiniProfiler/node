@@ -1,10 +1,10 @@
 var expect = require('chai').expect;
+var servers = require('./servers');
 
-for (var fw of ['express', 'koa']) {
-  var server = require(`./server/${fw}/default`);
+for (var server of servers) {
 
-  describe(`[${fw}] MiniProfiler Tests`, function() {
-    before(server.start);
+  describe(`[${server.framework}] MiniProfiler Tests`, function() {
+    before(server.start.bind(null, 'default'));
     after(server.stop);
 
     it('Profiled routes should always return Profiler ID', function(done) {
@@ -23,7 +23,7 @@ for (var fw of ['express', 'koa']) {
           var result = JSON.parse(body);
           expect(result.Id).to.equal(ids[0]);
           expect(result.Name).to.equal('/js-sleep');
-          expect(result.DurationMilliseconds).to.be.above(200);
+          expect(result.DurationMilliseconds).to.be.above(50);
           expect(result.Root.Children).to.be.empty;
           expect(result.Root.CustomTimings).to.have.property('custom');
           expect(result.Root.CustomTimings.custom).to.have.lengthOf(1);

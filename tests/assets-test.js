@@ -1,11 +1,10 @@
 var expect = require('chai').expect;
 var fs = require('fs');
+var servers = require('./servers');
 
-for (var fw of ['express', 'koa']) {
-  var server = require(`./server/${fw}/default`);
-
-  describe(`[${fw}] MiniProfiler Assets Tests`, function() {
-    before(server.start);
+for (var server of servers) {
+  describe(`[${server.framework}] MiniProfiler Assets Tests`, function() {
+    before(server.start.bind(null, 'default'));
     after(server.stop);
 
     var files = [
@@ -17,8 +16,10 @@ for (var fw of ['express', 'koa']) {
     files.forEach((file) => {
       it(`Should return ${file} file`, function(done) {
         server.get(`/mini-profiler-resources/${file}`, (err, response, body) => {
-          expect(body).to.be.equal(fs.readFileSync(`./ui/${file}`, 'utf-8'));
-          done();
+          fs.readFile(`./ui/${file}`, 'utf-8', (err, content) => {
+            expect(body).to.be.equal(content);
+            done();
+          });
         });
       });
     });

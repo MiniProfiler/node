@@ -13,4 +13,4 @@ app.use(route.get('/', function *(){
   this.body = '';
 }));
 
-module.exports = require('../base.js')(app);
+module.exports = app;
