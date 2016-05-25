@@ -65,8 +65,7 @@ See [examples/express.js](/examples/express.js) for more examples.
 
 Things to do:
 
-- support major web frameworks like: Express, Hapi, koa.js, Sails.js
-- add examples for every web frameworks
+- transform testcases into runnable examples (npm run example)
 - storing of client timings on first result postback (there's a todo in the `results` function about where to do this)
 - document more things
 - add providers for pg, mongodb, mysql, redis and more
