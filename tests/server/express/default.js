@@ -1,4 +1,4 @@
-var miniprofiler = require('../../lib/miniprofiler.js');
+var miniprofiler = require('../../../lib/miniprofiler.js');
 var express = require('express');
 
 var app = express();
@@ -29,4 +29,4 @@ app.get('/js-sleep', function(req, res) {
 	}, 300);
 });
 
-module.exports = require('./base.js')(app);
+module.exports = require('../base.js')(app);
