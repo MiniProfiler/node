@@ -65,6 +65,7 @@ See [examples/express.js](/examples/express.js) for more examples.
 
 Things to do:
 
+- Refactor/Remove TODO comments 
 - transform testcases into runnable examples (npm run example)
 - storing of client timings on first result postback (there's a todo in the `results` function about where to do this)
 - document more things

@@ -1,10 +1,10 @@
 var http = require('http');
 var miniprofiler = require('../lib/miniprofiler.js');
 
-var profile = miniprofiler.profile();
+var profiler = miniprofiler.http();
 
 http.createServer(function(req, res) {
-  profile(req, res, function() {
+  profiler(req, res, () => {
     req.miniprofiler.step('Step 1', function(){
       res.end('home');
     });
