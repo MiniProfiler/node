@@ -10,13 +10,13 @@ server.connection({
 });
 
 server.register(miniprofiler.hapi(), (err) => {
-  if (err) console.error('Failed to load plugin:', err);
+  if (err) throw err;
 });
 
 server.route({
   method: 'GET',
   path:'/',
-  handler: function (request, reply) {
+  handler: function(request, reply) {
     return reply('');
   }
 });
@@ -24,32 +24,32 @@ server.route({
 server.route({
   method: 'GET',
   path:'/step',
-  handler: function (request, reply) {
-	  request.raw.req.miniprofiler.step('Step 1', () => {
+  handler: function(request, reply) {
+    request.raw.req.miniprofiler.step('Step 1', () => {
       return reply('');
-	  });
+    });
   }
 });
 
 server.route({
   method: 'GET',
   path:'/step-two',
-  handler: function (request, reply) {
-	  request.raw.req.miniprofiler.step('Step 1', () => {
-		  request.raw.req.miniprofiler.step('Step 2', () => {
-        return reply('');
-		  });
-	  });
+  handler: function(request, reply) {
+  request.raw.req.miniprofiler.step('Step 1', () => {
+    request.raw.req.miniprofiler.step('Step 2', () => {
+      return reply('');
+    });
+  });
   }
 });
 
 server.route({
   method: 'GET',
   path:'/js-sleep',
-  handler: function (request, reply) {
-		request.raw.req.miniprofiler.timeQuery('custom', 'Sleeping...', setTimeout, function() {
-    	return reply('');
-		}, 50);
+  handler: function(request, reply) {
+    request.raw.req.miniprofiler.timeQuery('custom', 'Sleeping...', setTimeout, function() {
+      return reply('');
+    }, 50);
   }
 });
 

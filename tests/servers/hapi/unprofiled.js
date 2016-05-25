@@ -14,13 +14,13 @@ var disableMiniProfiler = (req) => {
 };
 
 server.register(miniprofiler.hapi(disableMiniProfiler), (err) => {
-  if (err) console.error('Failed to load plugin:', err);
+  if (err) throw (err);
 });
 
 server.route({
   method: 'GET',
   path:'/',
-  handler: function (request, reply) {
+  handler: function(request, reply) {
     return reply('');
   }
 });
