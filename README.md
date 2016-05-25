@@ -4,10 +4,10 @@
 
 Node.js implementation of Stack Exchange's MiniProfiler
 
-[![Build](https://travis-ci.org/goenning/miniprofiler-node.svg)](https://travis-ci.org/goenning/miniprofiler-node)
-[![Coverage](https://coveralls.io/repos/github/goenning/miniprofiler-node/badge.svg?branch=master)](https://coveralls.io/github/goenning/miniprofiler-node?branch=master)
-![Dependencies](https://david-dm.org/goenning/miniprofiler-node.svg)
-![devDependencies](https://david-dm.org/goenning/miniprofiler-node/dev-status.svg#info=devDependencies)
+[![Build](https://travis-ci.org/MiniProfiler/node.svg)](https://travis-ci.org/MiniProfiler/node)
+[![Coverage](https://coveralls.io/repos/github/MiniProfiler/node/badge.svg?branch=master)](https://coveralls.io/github/MiniProfiler/node?branch=master)
+![Dependencies](https://david-dm.org/MiniProfiler/node.svg)
+![devDependencies](https://david-dm.org/MiniProfiler/node/dev-status.svg#info=devDependencies)
 
 ## Installation (via [npm](https://npmjs.org/package/miniprofiler))
 
