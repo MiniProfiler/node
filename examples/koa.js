@@ -1,6 +1,6 @@
 var koa = require('koa');
 var app = koa();
-var miniprofiler = require('../lib/miniprofiler.js')
+var miniprofiler = require('../lib/miniprofiler.js');
 
 app.use(miniprofiler.koa(() => {return false;}));
 
