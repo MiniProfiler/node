@@ -23,7 +23,7 @@ for (var server of servers) {
           var result = JSON.parse(body);
           expect(result.Id).to.equal(ids[0]);
           expect(result.Name).to.equal('/js-sleep');
-          expect(result.DurationMilliseconds).to.be.above(50);
+          expect(result.DurationMilliseconds).to.be.above(40);
           expect(result.Root.Children).to.be.empty;
           expect(result.Root.CustomTimings).to.have.property('custom');
           expect(result.Root.CustomTimings.custom).to.have.lengthOf(1);

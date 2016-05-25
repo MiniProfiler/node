@@ -1,5 +1,5 @@
 var request = require('request');
-var frameworks = [ 'koa', 'express' ];
+var frameworks = [ 'koa', 'express', 'hapi' ];
 var all = [ ];
 
 for (var fw of frameworks) {
