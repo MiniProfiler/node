@@ -1,10 +1,10 @@
 var server;
 module.exports = {
-  start: function(name) {
+  start: function(name, done) {
     var app = require(`./${name}.js`);
-    server = app.listen(8080);
+    server = app.listen(8080, done);
   },
-  stop: function() {
-    server.close();
+  stop: function(done) {
+    server.close(done);
   }
 };

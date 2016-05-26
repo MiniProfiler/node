@@ -1,12 +1,10 @@
 var server;
 module.exports = {
-  start: function(name) {
+  start: function(name, done) {
     server = require(`./${name}.js`);
-    server.start((err) => {
-      if (err) throw err;
-    });
+    server.start(done);
   },
-  stop: function() {
-    server.stop();
+  stop: function(done) {
+    server.stop(done);
   }
 };
