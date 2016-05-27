@@ -1,11 +1,10 @@
 var expect = require('chai').expect;
 var fs = require('fs');
-var servers = require('./servers');
 
-for (var server of servers) {
-  describe(`[${server.framework}] MiniProfiler Assets Tests`, function() {
-    before(server.start.bind(null, 'default'));
-    after(server.stop);
+module.exports = function(server) {
+  describe('Assets Tests', function() {
+    before(server.setUp.bind(null, 'default'));
+    after(server.tearDown);
 
     var files = [
       'includes.css',
@@ -34,4 +33,4 @@ for (var server of servers) {
     });
 
   });
-}
+};

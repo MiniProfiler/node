@@ -54,18 +54,18 @@ html
 
 When visiting `localhost:8080`, you should see this.
 
-![](/examples/images/example0.png)
+![](/images/example0.png)
 
-See [examples/express.js](/examples/express.js) for more examples.
+See [tests/servers/<your web framework>](/tests/servers) for more examples.
 
-![](/examples/images/example1.png)
-![](/examples/images/example2.png)
+![](/images/example1.png)
+![](/images/example2.png)
 
 # Want to help?
 
 Things to do:
 
-- Refactor/Remove TODO comments 
+- Refactor/Remove TODO comments
 - transform testcases into runnable examples (npm run example)
 - storing of client timings on first result postback (there's a todo in the `results` function about where to do this)
 - document more things

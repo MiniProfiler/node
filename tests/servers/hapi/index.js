@@ -1,4 +1,5 @@
 var server;
+
 module.exports = {
   start: function(name, done) {
     server = require(`./${name}.js`);

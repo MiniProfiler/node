@@ -10,7 +10,13 @@ var disableMiniProfiler = (req) => {
 app.use(miniprofiler.koa(disableMiniProfiler));
 
 app.use(route.get('/', function *(){
-  this.body = '';
+  yield new Promise((resolve, reject) => {
+    this.req.miniprofiler.timeQuery('custom', 'Sleeping...', setTimeout, () => {
+      this.req.miniprofiler.step('Step 1', () => {
+        resolve();
+      });
+    }, 50);
+  });
 }));
 
 module.exports = app;

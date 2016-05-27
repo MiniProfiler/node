@@ -10,7 +10,11 @@ var disableMiniProfiler = (req) => {
 app.use(miniprofiler.express(disableMiniProfiler));
 
 app.get('/', (req, res) => {
-	res.send();
+	req.miniprofiler.timeQuery('custom', 'Sleeping...', setTimeout, function() {
+    req.miniprofiler.step('Step 1', () => {
+      res.send(req.miniprofiler.include());
+    });
+	}, 50);
 });
 
 module.exports = app;

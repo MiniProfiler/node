@@ -1,11 +1,9 @@
 var expect = require('chai').expect;
-var servers = require('./servers');
 
-for (var server of servers) {
-
-  describe(`[${server.framework}] MiniProfiler Share Tests`, function() {
-    before(server.start.bind(null, 'default'));
-    after(server.stop);
+module.exports = function(server) {
+  describe('Share Tests', function() {
+    before(server.setUp.bind(null, 'default'));
+    after(server.tearDown);
 
     var expectOkResponse = (done) => (err, response, body) => {
       expect(response.statusCode).to.be.equal(200);
@@ -46,4 +44,5 @@ for (var server of servers) {
     });
 
   });
-}
+
+};
