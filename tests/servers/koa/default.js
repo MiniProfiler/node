@@ -15,12 +15,6 @@ app.use(route.get('/step', function *(){
   });
 }));
 
-app.use(route.get('/step-error', function *(){
-  this.req.miniprofiler.step('Step', () => {
-    throw new Error('Ouch!');
-  });
-}));
-
 app.use(route.get('/step-two', function *(){
   this.req.miniprofiler.step('Step 1', () => {
     this.req.miniprofiler.step('Step 2', () => {

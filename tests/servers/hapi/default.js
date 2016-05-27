@@ -33,16 +33,6 @@ server.route({
 
 server.route({
   method: 'GET',
-  path:'/step-error',
-  handler: function(request, reply) {
-    request.raw.req.miniprofiler.step('Step', () => {
-      throw new Error('Ouch!');
-    });
-  }
-});
-
-server.route({
-  method: 'GET',
   path:'/step-two',
   handler: function(request, reply) {
     request.raw.req.miniprofiler.step('Step 1', () => {

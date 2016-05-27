@@ -21,26 +21,24 @@ module.exports = function(server) {
       });
     });
 
-    for(var path of ['/step', '/step-error']) {
-      it(`${path} route should profile one step`, function(done) {
-        server.get(path, (err, response) => {
-          var ids = JSON.parse(response.headers['x-miniprofiler-ids']);
-          expect(ids).to.have.lengthOf(1);
+    it('/step route should profile one step', function(done) {
+      server.get('/step', (err, response) => {
+        var ids = JSON.parse(response.headers['x-miniprofiler-ids']);
+        expect(ids).to.have.lengthOf(1);
 
-          server.post('/mini-profiler-resources/results', { id: ids[0], popup: 1 }, (err, response, body) => {
-            var result = JSON.parse(body);
-            expect(result.Id).to.equal(ids[0]);
-            expect(result.Name).to.equal(path);
-            expect(result.Root.Children).to.have.lengthOf(1);
+        server.post('/mini-profiler-resources/results', { id: ids[0], popup: 1 }, (err, response, body) => {
+          var result = JSON.parse(body);
+          expect(result.Id).to.equal(ids[0]);
+          expect(result.Name).to.equal('/step');
+          expect(result.Root.Children).to.have.lengthOf(1);
 
-            expect(result.Root.Children[0].Name).to.equal('Step');
-            expect(result.Root.Children[0].Children).to.be.empty;
+          expect(result.Root.Children[0].Name).to.equal('Step');
+          expect(result.Root.Children[0].Children).to.be.empty;
 
-            done();
-          });
+          done();
         });
       });
-    }
+    });
 
     it('step-two route should profile two nested step', function(done) {
       server.get('/step-two', (err, response) => {

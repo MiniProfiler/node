@@ -15,12 +15,6 @@ app.get('/step', (req, res) => {
   });
 });
 
-app.get('/step-error', (req, res) => {
-  req.miniprofiler.step('Step', () => {
-		throw new Error('Ouch!');
-  });
-});
-
 app.get('/step-two', (req, res) => {
   req.miniprofiler.step('Step 1', () => {
     req.miniprofiler.step('Step 2', () => {

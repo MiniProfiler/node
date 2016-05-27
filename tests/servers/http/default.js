@@ -16,10 +16,6 @@ var server = http.createServer((req, res) => {
 			req.miniprofiler.step('Step', () => {
 				res.end(req.miniprofiler.include());
 			});
-		} else if (reqPath == '/step-error') {
-			req.miniprofiler.step('Step', () => {
-				throw new Error('Ouch!');
-			});
 		}  else if (reqPath == '/step-two') {
 			req.miniprofiler.step('Step 1', () => {
 				req.miniprofiler.step('Step 2', () => {
