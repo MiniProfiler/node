@@ -55,12 +55,12 @@ html
 
 When visiting `localhost:8080`, you should see this.
 
-![](/images/example0.png)
+![](/examples/images/example0.png)
 
 See [tests/servers/<your web framework>](/tests/servers) for more examples.
 
-![](/images/example1.png)
-![](/images/example2.png)
+![](/examples/images/example1.png)
+![](/examples/images/example2.png)
 
 # Want to help?
 
