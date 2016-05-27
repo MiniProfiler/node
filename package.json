@@ -15,7 +15,18 @@
     "type": "git",
     "url": "https://github.com/MiniProfiler/node.git"
   },
-  "author": "",
+  "bugs": {
+    "url": "http://github.com/MiniProfiler/node/issues"
+  },
+  "author": {
+    "name" : "Guilherme Oenning",
+    "email" : "oenning.ti@gmail.com",
+    "url" : "http://goenning.net/"
+  },
+  "contributors": [
+    "Matt Jibson <matt.jibson@gmail.com> (https://mattjibson.com/)",
+    "Kevin Montrose"
+  ],
   "license": "Apache-2.0",
   "readmeFilename": "README.md",
   "dependencies": {
@@ -23,6 +34,13 @@
     "node-uuid": "^1.4.7",
     "underscore": "1.5.2"
   },
+  "tags": [
+    "profiler",
+    "sql",
+    "performance",
+    "profiling",
+    "timing"
+  ],
   "devDependencies": {
     "chai": "^3.5.0",
     "coveralls": "^2.11.9",
