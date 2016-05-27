@@ -4,6 +4,7 @@
 
 Node.js implementation of Stack Exchange's MiniProfiler
 
+[![NPM](https://img.shields.io/npm/v/npm.svg)](https://img.shields.io/npm/v/npm.svg)
 [![Build](https://travis-ci.org/MiniProfiler/node.svg)](https://travis-ci.org/MiniProfiler/node)
 [![Coverage](https://coveralls.io/repos/github/MiniProfiler/node/badge.svg?branch=master)](https://coveralls.io/github/MiniProfiler/node?branch=master)
 ![Dependencies](https://david-dm.org/MiniProfiler/node.svg)
@@ -66,7 +67,7 @@ See [tests/servers/<your web framework>](/tests/servers) for more examples.
 Things to do:
 
 - Refactor/Remove TODO comments
-- transform testcases into runnable examples (npm run example)
+- transform test cases into runnable examples (npm run example)
 - storing of client timings on first result postback (there's a todo in the `results` function about where to do this)
 - document more things
 - add providers for pg, mongodb, mysql, redis and more
