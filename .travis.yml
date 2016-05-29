@@ -4,6 +4,12 @@ node_js:
   - "5"
   - "stable"
 
+services:
+  - redis-server
+
+env:
+- REDIS_PORT_6379_TCP_ADDR=localhost
+
 before_script:
   - npm run lint
 
