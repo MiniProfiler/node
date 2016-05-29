@@ -4,11 +4,10 @@ node_js:
   - "5"
   - "stable"
 
-services:
-  - redis-server
+sudo: required
 
-env:
-- REDIS_PORT_6379_TCP_ADDR=localhost
+services:
+  - docker
 
 before_script:
   - npm run lint
@@ -17,9 +16,6 @@ after_script:
   - npm run coverage
   - npm run update-coveralls
   - npm run check-coverage
-
-script:
-  - npm run mocha
 
 notifications:
   email:
