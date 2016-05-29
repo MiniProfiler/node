@@ -25,7 +25,4 @@ coverage:
     - redis
     - postgres:pg
   working_dir: /usr/src/miniprofiler
-  command:
-    - npm run mocha-coverage
-    - npm run check-coverage
-    - npm run update-coveralls
+  command: bash -c "npm run mocha-coverage && npm run check-coverage && npm run update-coveralls"
