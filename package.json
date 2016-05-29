@@ -7,8 +7,10 @@
     "lint": "eslint .",
     "stop-services": "docker-compose stop",
     "test": "docker-compose up test",
+    "coverage": "docker-compose up coverage",
+
     "mocha": "mocha tests/ -c",
-    "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- tests/ -R spec",
+    "mocha-coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- tests/ -R spec",
     "check-coverage": "istanbul check-coverage --statements 70 --branches 70 --functions 70 --lines 70",
     "update-coveralls": "cat coverage/lcov.info | node ./node_modules/coveralls/bin/coveralls.js"
   },
