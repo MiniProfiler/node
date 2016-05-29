@@ -2,8 +2,10 @@ var miniprofiler = require('../../../lib/miniprofiler.js');
 var koa = require('koa');
 var route = require('koa-route');
 var app = koa();
+var redis = require('redis');
 
 app.use(miniprofiler.koa());
+var client = redis.createClient(6379, process.env.REDIS_PORT_6379_TCP_ADDR);
 
 app.use(route.get('/', function *(){
   this.body = this.req.miniprofiler.include();
@@ -29,6 +31,26 @@ app.use(route.get('/js-sleep', function *(){
       this.body = this.req.miniprofiler.include();
       resolve();
     }, 50);
+  });
+}));
+
+app.use(route.get('/redis-set-key', function *(){
+  yield new Promise((resolve, reject) => {
+    client.set('key', 'Awesome!', () => {
+      this.body = this.req.miniprofiler.include();
+      resolve();
+    });
+  });
+}));
+
+app.use(route.get('/redis-set-get-key', function *(){
+  yield new Promise((resolve, reject) => {
+    client.set('key', 'Awesome!', () => {
+      client.get('key', (err, result) => {
+        this.body = this.req.miniprofiler.include();
+        resolve();
+      });
+    });
   });
 }));
 

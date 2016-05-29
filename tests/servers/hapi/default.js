@@ -1,7 +1,9 @@
 'use strict';
 var miniprofiler = require('../../../lib/miniprofiler.js');
+var redis = require('redis');
 
 const Hapi = require('hapi');
+var client = redis.createClient(6379, process.env.REDIS_PORT_6379_TCP_ADDR);
 
 const server = new Hapi.Server();
 server.connection({
@@ -50,6 +52,28 @@ server.route({
     request.raw.req.miniprofiler.timeQuery('custom', 'Sleeping...', setTimeout, () => {
       return reply(request.raw.req.miniprofiler.include());
     }, 50);
+  }
+});
+
+server.route({
+  method: 'GET',
+  path:'/redis-set-key',
+  handler: function(request, reply) {
+    client.set('key', 'Awesome!', () => {
+      reply(request.raw.req.miniprofiler.include());
+    });
+  }
+});
+
+server.route({
+  method: 'GET',
+  path:'/redis-set-get-key',
+  handler: function(request, reply) {
+    client.set('key', 'Awesome!', () => {
+      client.get('key', (err, result) => {
+        reply(request.raw.req.miniprofiler.include());
+      });
+    });
   }
 });
 
