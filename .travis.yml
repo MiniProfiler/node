@@ -18,6 +18,9 @@ after_script:
   - npm run update-coveralls
   - npm run check-coverage
 
+script:
+  - npm run mocha
+
 notifications:
   email:
     on_success: never

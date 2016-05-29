@@ -1,11 +1,11 @@
 redis:
   image: redis
 
-miniprofiler:
+test:
   image: node
   volumes:
     - .:/usr/src/miniprofiler
   links:
     - redis
   working_dir: /usr/src/miniprofiler
-  command: bash -c "npm install && npm test"
+  command: npm run mocha
