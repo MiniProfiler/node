@@ -4,10 +4,7 @@ var miniprofiler = require('../../../lib/miniprofiler.js');
 const Hapi = require('hapi');
 
 const server = new Hapi.Server();
-server.connection({
-    host: 'localhost',
-    port: 8080
-});
+server.connection({ port: 8083 });
 
 var disableMiniProfiler = (req) => {
   return false;

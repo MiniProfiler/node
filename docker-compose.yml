@@ -1,11 +1,18 @@
 redis:
   image: redis
 
+postgres:
+  image: postgres
+  environment:
+    - POSTGRES_USER=docker
+    - POSTGRES_PASSWORD=docker
+
 test:
   image: node
   volumes:
     - .:/usr/src/miniprofiler
   links:
     - redis
+    - postgres:pg
   working_dir: /usr/src/miniprofiler
   command: npm run mocha

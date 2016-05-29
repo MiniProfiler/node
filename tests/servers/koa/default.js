@@ -3,9 +3,14 @@ var koa = require('koa');
 var route = require('koa-route');
 var app = koa();
 var redis = require('redis');
+var pg = require('pg');
+var connString = `postgres://docker:docker@${process.env.PG_PORT_5432_TCP_ADDR}/docker`;
+
+var client = redis.createClient(6379, process.env.REDIS_PORT_6379_TCP_ADDR);
 
 app.use(miniprofiler.koa());
-var client = redis.createClient(6379, process.env.REDIS_PORT_6379_TCP_ADDR);
+app.use(miniprofiler.koa.for.pg(pg));
+app.use(miniprofiler.koa.for.redis(redis));
 
 app.use(route.get('/', function *(){
   this.body = this.req.miniprofiler.include();
@@ -47,6 +52,17 @@ app.use(route.get('/redis-set-get-key', function *(){
   yield new Promise((resolve, reject) => {
     client.set('key', 'Awesome!', () => {
       client.get('key', (err, result) => {
+        this.body = this.req.miniprofiler.include();
+        resolve();
+      });
+    });
+  });
+}));
+
+app.use(route.get('/pg-select', function *(){
+  yield new Promise((resolve, reject) => {
+    pg.connect(connString, (err, pgClient, done) => {
+      pgClient.query('SELECT $1::int AS number', ['1'], (err, result) => {
         this.body = this.req.miniprofiler.include();
         resolve();
       });

@@ -1,31 +1,37 @@
 var debug = require('debug')('miniprofiler:tests');
 var request = require('request');
-var frameworks = [ 'koa', 'http', 'hapi', 'express' ];
+var frameworks = {
+  'koa': { 'port': 8081 },
+  'express': { 'port': 8082 },
+  'hapi': { 'port': 8083 }
+};
+
 var all = [ ];
 
-for (var fw of frameworks) {
+for (let fw in frameworks) {
   var server = require(`./${fw}`);
   server.framework = fw;
+  frameworks[fw].server = server;
 
   server.setUp = function(name, done) {
     var path = require.resolve('../../lib/miniprofiler.js');
     delete require.cache[path];
-    server.start(name, done);
+    frameworks[fw].server.start(name, frameworks[fw].port, done);
   };
 
   server.tearDown = function(done) {
-    server.stop(done);
+    frameworks[fw].server.stop(done);
   };
 
   server.get = (path, cb) => {
-    request.get(`http://localhost:8080${path}`, (err, response, body) => {
+    request.get(`http://localhost:${frameworks[fw].port}${path}`, (err, response, body) => {
       if (err) debug(err);
       cb(err, response, body);
     });
   };
 
   server.post = (path, params, cb) => {
-    request.post({url: `http://localhost:8080${path}`, form: params }, (err, response, body) => {
+    request.post({url: `http://localhost:${frameworks[fw].port}${path}`, form: params }, (err, response, body) => {
       if (err) debug(err);
       cb(err, response, body);
     });
