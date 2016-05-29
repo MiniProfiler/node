@@ -11,7 +11,7 @@
 
     "mocha": "mocha tests/ -c",
     "mocha-coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- tests/ -R spec",
-    "check-coverage": "istanbul check-coverage --statements 90 --branches 90 --functions 90 --lines 90",
+    "check-coverage": "istanbul check-coverage --statements 80 --branches 80 --functions 80 --lines 80",
     "update-coveralls": "cat coverage/lcov.info | node ./node_modules/coveralls/bin/coveralls.js"
   },
   "repository": {
