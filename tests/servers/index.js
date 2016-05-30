@@ -14,8 +14,7 @@ for (let fw in frameworks) {
   frameworks[fw].server = server;
 
   server.setUp = function(name, done) {
-    var path = require.resolve('../../lib/miniprofiler.js');
-    delete require.cache[path];
+    Object.keys(require.cache).forEach((key) => { delete require.cache[key]; });
     frameworks[fw].server.start(name, frameworks[fw].port, done);
   };
 

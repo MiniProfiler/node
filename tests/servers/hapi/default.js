@@ -53,9 +53,36 @@ server.route({
 
 server.route({
   method: 'GET',
+  path:'/step-parallel',
+  handler: function(request, reply) {
+    var count = 0;
+    var finish = () => {
+    if (++count == 2)
+      return reply(request.raw.req.miniprofiler.include());
+    };
+
+    request.raw.req.miniprofiler.step('Step 1', finish);
+    request.raw.req.miniprofiler.step('Step 2', finish);
+  }
+});
+
+server.route({
+  method: 'GET',
   path:'/js-sleep',
   handler: function(request, reply) {
     request.raw.req.miniprofiler.timeQuery('custom', 'Sleeping...', setTimeout, () => {
+      return reply(request.raw.req.miniprofiler.include());
+    }, 50);
+  }
+});
+
+server.route({
+  method: 'GET',
+  path:'/js-sleep-start-stop',
+  handler: function(request, reply) {
+    var timing = request.raw.req.miniprofiler.startTimeQuery('custom', 'Sleeping...');
+    setTimeout(function() {
+      request.raw.req.miniprofiler.stopTimeQuery(timing);
       return reply(request.raw.req.miniprofiler.include());
     }, 50);
   }
@@ -89,6 +116,19 @@ server.route({
   handler: function(request, reply) {
     pg.connect(connString, function(err, pgClient, done) {
       pgClient.query('SELECT $1::int AS number', ['1'], function(err, result) {
+        reply(request.raw.req.miniprofiler.include());
+      });
+    });
+  }
+});
+
+server.route({
+  method: 'GET',
+  path:'/pg-select-event',
+  handler: function(request, reply) {
+    pg.connect(connString, function(err, pgClient, done) {
+      var query = pgClient.query('SELECT $1::int AS number', ['1']);
+      query.on('end', function() {
         reply(request.raw.req.miniprofiler.include());
       });
     });

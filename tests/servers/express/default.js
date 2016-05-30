@@ -29,8 +29,27 @@ app.get('/step-two', (req, res) => {
   });
 });
 
+app.get('/step-parallel', (req, res) => {
+	var count = 0;
+	var finish = () => {
+		if (++count == 2)
+			res.send(req.miniprofiler.include());
+	};
+
+  req.miniprofiler.step('Step 1', finish);
+  req.miniprofiler.step('Step 2', finish);
+});
+
 app.get('/js-sleep', function(req, res) {
 	req.miniprofiler.timeQuery('custom', 'Sleeping...', setTimeout, function() {
+		res.send(req.miniprofiler.include());
+	}, 50);
+});
+
+app.get('/js-sleep-start-stop', function(req, res) {
+	var timing = req.miniprofiler.startTimeQuery('custom', 'Sleeping...');
+	setTimeout(function() {
+		req.miniprofiler.stopTimeQuery(timing);
 		res.send(req.miniprofiler.include());
 	}, 50);
 });
@@ -54,6 +73,15 @@ app.get('/pg-select', function(req, res) {
     pgClient.query('SELECT $1::int AS number', ['1'], function(err, result) {
       res.send(req.miniprofiler.include());
     });
+  });
+});
+
+app.get('/pg-select-event', function(req, res) {
+  pg.connect(connString, function(err, pgClient, done) {
+    var query = pgClient.query('SELECT $1::int AS number', ['1']);
+		query.on('end', function() {
+      res.send(req.miniprofiler.include());
+		});
   });
 });
 

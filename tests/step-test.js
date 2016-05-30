@@ -60,5 +60,26 @@ module.exports = function(server) {
         });
       });
     });
+
+    it('/step-parallel route should profile two nested step', function(done) {
+      server.get('/step-parallel', (err, response) => {
+        var ids = JSON.parse(response.headers['x-miniprofiler-ids']);
+        expect(ids).to.have.lengthOf(1);
+
+        server.post('/mini-profiler-resources/results', { id: ids[0], popup: 1 }, (err, response, body) => {
+          var result = JSON.parse(body);
+          expect(result.Id).to.equal(ids[0]);
+          expect(result.Name).to.equal('/step-parallel');
+          expect(result.Root.Children).to.have.lengthOf(2);
+
+          expect(result.Root.Children[0].Name).to.equal('Step 1');
+          expect(result.Root.Children[0].Children).to.be.empty;
+
+          expect(result.Root.Children[1].Name).to.equal('Step 2');
+          expect(result.Root.Children[1].Children).to.be.empty;
+          done();
+        });
+      });
+    });
   });
 };

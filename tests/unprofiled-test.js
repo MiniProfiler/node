@@ -5,17 +5,19 @@ module.exports = function(server) {
     before(server.setUp.bind(null, 'unprofiled'));
     after(server.tearDown);
 
-    it('Unprofiled server should not return Profiler ID', function(done) {
-      server.get('/', (err, response) => {
-        expect(response.headers).to.not.include.keys('x-miniprofiler-ids');
-        done();
+    ['/', '/pg', '/redis'].forEach((path) => {
+      it(`should not return profiler ID for '${path}'`, function(done) {
+        server.get(path, (err, response) => {
+          expect(response.headers).to.not.include.keys('x-miniprofiler-ids');
+          done();
+        });
       });
-    });
 
-    it('Unprofiled server should not include assets', function(done) {
-      server.get('/', (err, response, body) => {
-        expect(body).to.be.equal('');
-        done();
+      it(`should not include assets for '${path}'`, function(done) {
+        server.get('/', (err, response, body) => {
+          expect(body).to.be.equal('');
+          done();
+        });
       });
     });
 
@@ -27,7 +29,7 @@ module.exports = function(server) {
     ];
 
     paths.forEach((path) => {
-      it(`Unprofiled server should not find ${path}`, function(done) {
+      it(`should not respond for '${path}'`, function(done) {
         server.get(`/mini-profiler-resources${path}`, (err, response, body) => {
           expect(response.statusCode).to.be.equal(404);
           expect(response.headers['content-type']).to.be.equal('text/plain; charset=utf-8');
