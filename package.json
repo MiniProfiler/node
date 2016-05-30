@@ -1,6 +1,6 @@
 {
   "name": "miniprofiler",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "description": "A simple but effective mini-profiler.",
   "main": "lib/miniprofiler.js",
   "scripts": {
