@@ -13,10 +13,11 @@ server.connection({ port: 8083 });
 server.register(miniprofiler.hapi(), (err) => {
   if (err) throw err;
 });
-server.register(miniprofiler.hapi.for.pg(pg), (err) => {
+
+server.register(miniprofiler.hapi.for(require('../../../lib/providers/miniprofiler.pg.js')(pg)), (err) => {
   if (err) throw err;
 });
-server.register(miniprofiler.hapi.for.redis(redis), (err) => {
+server.register(miniprofiler.hapi.for(require('../../../lib/providers/miniprofiler.redis.js')(redis)), (err) => {
   if (err) throw err;
 });
 

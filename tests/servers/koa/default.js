@@ -9,8 +9,8 @@ var connString = `postgres://docker:docker@${process.env.PG_PORT_5432_TCP_ADDR}/
 var client = redis.createClient(6379, process.env.REDIS_PORT_6379_TCP_ADDR);
 
 app.use(miniprofiler.koa());
-app.use(miniprofiler.koa.for.pg(pg));
-app.use(miniprofiler.koa.for.redis(redis));
+app.use(miniprofiler.koa.for(require('../../../lib/providers/miniprofiler.pg.js')(pg)));
+app.use(miniprofiler.koa.for(require('../../../lib/providers/miniprofiler.redis.js')(redis)));
 
 app.use(route.get('/', function *(){
   this.body = this.req.miniprofiler.include();

@@ -8,8 +8,8 @@ var app = express();
 var client = redis.createClient(6379, process.env.REDIS_PORT_6379_TCP_ADDR);
 
 app.use(miniprofiler.express());
-app.use(miniprofiler.express.for.pg(pg));
-app.use(miniprofiler.express.for.redis(redis));
+app.use(miniprofiler.express.for(require('../../../lib/providers/miniprofiler.pg.js')(pg)));
+app.use(miniprofiler.express.for(require('../../../lib/providers/miniprofiler.redis.js')(redis)));
 
 app.get('/', (req, res) => {
 	res.send(req.miniprofiler.include());
