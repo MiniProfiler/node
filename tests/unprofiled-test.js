@@ -1,3 +1,5 @@
+'use strict';
+
 var expect = require('chai').expect;
 
 module.exports = function(server) {
@@ -5,19 +7,17 @@ module.exports = function(server) {
     before(server.setUp.bind(null, 'unprofiled'));
     after(server.tearDown);
 
-    ['/', '/pg', '/redis'].forEach((path) => {
-      it(`should not return profiler ID for '${path}'`, function(done) {
-        server.get(path, (err, response) => {
-          expect(response.headers).to.not.include.keys('x-miniprofiler-ids');
-          done();
-        });
+    it('should not return profiler ID', function(done) {
+      server.get('/', (err, response) => {
+        expect(response.headers).to.not.include.keys('x-miniprofiler-ids');
+        done();
       });
+    });
 
-      it(`should not include assets for '${path}'`, function(done) {
-        server.get('/', (err, response, body) => {
-          expect(body).to.be.equal('');
-          done();
-        });
+    it('should not include asset', function(done) {
+      server.get('/', (err, response, body) => {
+        expect(body).to.be.equal('');
+        done();
       });
     });
 

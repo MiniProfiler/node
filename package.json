@@ -1,18 +1,14 @@
 {
   "name": "miniprofiler",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A simple but effective mini-profiler.",
   "main": "lib/miniprofiler.js",
   "scripts": {
     "lint": "eslint .",
-    "stop-services": "docker-compose stop",
-    "test": "docker-compose up test",
-    "coverage": "docker-compose up coverage",
-
-    "mocha": "mocha tests/ -c",
-    "mocha-coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- tests/ -R spec",
+    "test": "mocha tests/ -c",
+    "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- tests/ -R spec",
     "check-coverage": "istanbul check-coverage --statements 95 --branches 95 --functions 95 --lines 95",
-    "update-coveralls": "cat coverage/lcov.info | sed s/.usr.src.miniprofiler/./ | node ./node_modules/coveralls/bin/coveralls.js"
+    "update-coveralls": "cat coverage/lcov.info | node ./node_modules/coveralls/bin/coveralls.js"
   },
   "repository": {
     "type": "git",
@@ -21,11 +17,7 @@
   "bugs": {
     "url": "http://github.com/MiniProfiler/node/issues"
   },
-  "author": {
-    "name": "Guilherme Oenning",
-    "email": "oenning.ti@gmail.com",
-    "url": "http://goenning.net/"
-  },
+  "author": "Guilherme Oenning <oenning.ti@gmail.com> (http://goenning.net/)",
   "contributors": [
     "Matt Jibson <matt.jibson@gmail.com> (https://mattjibson.com/)",
     "Kevin Montrose"
@@ -39,7 +31,6 @@
   },
   "tags": [
     "profiler",
-    "sql",
     "performance",
     "profiling",
     "timing"
@@ -54,9 +45,7 @@
     "koa": "^1.2.0",
     "koa-route": "^2.4.2",
     "mocha": "^2.5.3",
-    "pg": "^4.5.5",
     "pug": "^2.0.0-alpha7",
-    "redis": "^2.6.0-2",
     "request": "^2.72.0"
   }
 }

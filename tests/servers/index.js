@@ -1,3 +1,5 @@
+'use strict';
+
 var debug = require('debug')('miniprofiler:tests');
 var request = require('request');
 var frameworks = {

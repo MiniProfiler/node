@@ -1,4 +1,5 @@
 'use strict';
+
 var miniprofiler = require('../../../lib/miniprofiler.js');
 
 const Hapi = require('hapi');

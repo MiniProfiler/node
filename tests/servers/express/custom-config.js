@@ -1,3 +1,5 @@
+'use strict';
+
 var miniprofiler = require('../../../lib/miniprofiler.js');
 var express = require('express');
 

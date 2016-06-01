@@ -1,3 +1,5 @@
+'use strict';
+
 var servers = require('./servers');
 var fs = require('fs');
 var _ = require('underscore');
