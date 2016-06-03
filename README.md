@@ -1,4 +1,4 @@
-##### `The project is still under development, the API will change! Use with caution. NPM package is currently outdated.`
+##### `The project is still under development, the API will change! Use with caution.`
 
 # node-miniprofiler
 
