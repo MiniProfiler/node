@@ -6,6 +6,7 @@ var route = require('koa-route');
 var app = koa();
 
 app.use(miniprofiler.koa());
+app.use(miniprofiler.koa.for(require('../dummy-provider.js')()));
 
 app.use(route.get('/', function *(){
   this.body = this.state.miniprofiler.include();

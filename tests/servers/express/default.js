@@ -6,6 +6,7 @@ var express = require('express');
 var app = express();
 
 app.use(miniprofiler.express());
+app.use(miniprofiler.express.for(require('../dummy-provider.js')()));
 
 app.get('/', (req, res) => {
 	res.send(res.locals.miniprofiler.include());

@@ -10,6 +10,10 @@ server.register(miniprofiler.hapi(), (err) => {
   if (err) throw err;
 });
 
+server.register(miniprofiler.hapi.for(require('../dummy-provider.js')()), (err) => {
+  if (err) throw err;
+});
+
 server.route({
   method: 'GET',
   path:'/',
