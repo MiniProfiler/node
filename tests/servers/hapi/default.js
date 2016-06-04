@@ -14,7 +14,7 @@ server.route({
   method: 'GET',
   path:'/',
   handler: function(request, reply) {
-    return reply(request.raw.req.miniprofiler.include());
+    return reply(request.app.miniprofiler.include());
   }
 });
 
@@ -23,7 +23,7 @@ server.route({
   path:'/step',
   handler: function(request, reply) {
     request.raw.req.miniprofiler.step('Step', () => {
-      return reply(request.raw.req.miniprofiler.include());
+      return reply(request.app.miniprofiler.include());
     });
   }
 });
@@ -34,7 +34,7 @@ server.route({
   handler: function(request, reply) {
     request.raw.req.miniprofiler.step('Step 1', () => {
       request.raw.req.miniprofiler.step('Step 2', () => {
-        return reply(request.raw.req.miniprofiler.include());
+        return reply(request.app.miniprofiler.include());
       });
     });
   }
@@ -47,7 +47,7 @@ server.route({
     var count = 0;
     var finish = () => {
     if (++count == 2)
-      return reply(request.raw.req.miniprofiler.include());
+      return reply(request.app.miniprofiler.include());
     };
 
     request.raw.req.miniprofiler.step('Step 1', finish);
@@ -60,7 +60,7 @@ server.route({
   path:'/js-sleep',
   handler: function(request, reply) {
     request.raw.req.miniprofiler.timeQuery('custom', 'Sleeping...', setTimeout, () => {
-      return reply(request.raw.req.miniprofiler.include());
+      return reply(request.app.miniprofiler.include());
     }, 50);
   }
 });
@@ -72,7 +72,7 @@ server.route({
     var timing = request.raw.req.miniprofiler.startTimeQuery('custom', 'Sleeping...');
     setTimeout(function() {
       request.raw.req.miniprofiler.stopTimeQuery(timing);
-      return reply(request.raw.req.miniprofiler.include());
+      return reply(request.app.miniprofiler.include());
     }, 50);
   }
 });

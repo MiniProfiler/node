@@ -20,7 +20,7 @@ server.route({
   handler: function(request, reply) {
     request.raw.req.miniprofiler.timeQuery('custom', 'Sleeping...', setTimeout, () => {
       request.raw.req.miniprofiler.step('Step 1', () => {
-        return reply(request.raw.req.miniprofiler.include());
+        return reply(request.app.miniprofiler.include());
       });
     }, 50);
   }

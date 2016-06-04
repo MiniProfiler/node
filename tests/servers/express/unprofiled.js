@@ -14,7 +14,7 @@ app.use(miniprofiler.express(disableMiniProfiler));
 app.get('/', (req, res) => {
 	req.miniprofiler.timeQuery('custom', 'Sleeping...', setTimeout, function() {
     req.miniprofiler.step('Step 1', () => {
-      res.send(req.miniprofiler.include());
+      res.send(res.locals.miniprofiler.include());
     });
 	}, 50);
 });

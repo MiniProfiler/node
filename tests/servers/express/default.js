@@ -8,19 +8,19 @@ var app = express();
 app.use(miniprofiler.express());
 
 app.get('/', (req, res) => {
-	res.send(req.miniprofiler.include());
+	res.send(res.locals.miniprofiler.include());
 });
 
 app.get('/step', (req, res) => {
   req.miniprofiler.step('Step', () => {
-    res.send(req.miniprofiler.include());
+    res.send(res.locals.miniprofiler.include());
   });
 });
 
 app.get('/step-two', (req, res) => {
   req.miniprofiler.step('Step 1', () => {
     req.miniprofiler.step('Step 2', () => {
-      res.send(req.miniprofiler.include());
+      res.send(res.locals.miniprofiler.include());
     });
   });
 });
@@ -29,7 +29,7 @@ app.get('/step-parallel', (req, res) => {
 	var count = 0;
 	var finish = () => {
 		if (++count == 2)
-			res.send(req.miniprofiler.include());
+			res.send(res.locals.miniprofiler.include());
 	};
 
   req.miniprofiler.step('Step 1', finish);
@@ -38,7 +38,7 @@ app.get('/step-parallel', (req, res) => {
 
 app.get('/js-sleep', function(req, res) {
 	req.miniprofiler.timeQuery('custom', 'Sleeping...', setTimeout, function() {
-		res.send(req.miniprofiler.include());
+		res.send(res.locals.miniprofiler.include());
 	}, 50);
 });
 
@@ -46,7 +46,7 @@ app.get('/js-sleep-start-stop', function(req, res) {
 	var timing = req.miniprofiler.startTimeQuery('custom', 'Sleeping...');
 	setTimeout(function() {
 		req.miniprofiler.stopTimeQuery(timing);
-		res.send(req.miniprofiler.include());
+		res.send(res.locals.miniprofiler.include());
 	}, 50);
 });
 

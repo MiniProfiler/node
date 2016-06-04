@@ -57,17 +57,7 @@ When visiting `localhost:8080`, you should see this.
 
 ![](/examples/images/example0.png)
 
-See [tests/servers/<your web framework>](/tests/servers) for more examples.
+See [goenning/miniprofiler-demo](https://github.com/goenning/miniprofiler-demo) for a running example.
 
 ![](/examples/images/example1.png)
 ![](/examples/images/example2.png)
-
-# Want to help?
-
-Things to do:
-
-- Refactor/Remove TODO comments
-- transform test cases into runnable examples (npm run example)
-- storing of client timings on first result postback (there's a todo in the `results` function about where to do this)
-- document more things
-- add providers for pg, mongodb, mysql, redis and more

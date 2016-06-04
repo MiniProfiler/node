@@ -12,7 +12,7 @@ miniprofiler.configure({
 app.use(miniprofiler.koa());
 
 app.use(route.get('/', function *(){
-  this.body = this.req.miniprofiler.include();
+  this.body = this.state.miniprofiler.include();
 }));
 
 module.exports = app;

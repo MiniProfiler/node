@@ -12,7 +12,7 @@ miniprofiler.configure({
 app.use(miniprofiler.express());
 
 app.get('/', (req, res) => {
-	res.send(req.miniprofiler.include());
+	res.send(res.locals.miniprofiler.include());
 });
 
 module.exports = app;

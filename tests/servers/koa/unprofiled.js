@@ -16,7 +16,7 @@ app.use(route.get('/', function *(){
   yield new Promise((resolve, reject) => {
     this.req.miniprofiler.timeQuery('custom', 'Sleeping...', setTimeout, () => {
       this.req.miniprofiler.step('Step 1', () => {
-        this.body = this.req.miniprofiler.include();
+        this.body = this.state.miniprofiler.include();
         resolve();
       });
     }, 50);

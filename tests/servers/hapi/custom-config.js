@@ -19,7 +19,7 @@ server.route({
   method: 'GET',
   path:'/',
   handler: function(request, reply) {
-    return reply(request.raw.req.miniprofiler.include());
+    return reply(request.app.miniprofiler.include());
   }
 });
 
