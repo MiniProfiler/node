@@ -7,7 +7,7 @@ module.exports = function(server) {
     before(server.setUp.bind(null, 'default'));
     after(server.tearDown);
 
-    for(var url of ['/js-sleep', '/js-sleep-start-stop']) {
+    for(let url of ['/js-sleep', '/js-sleep-start-stop']) {
       it(`Custom timed query should be profiled for url '${url}'`, function(done) {
         server.get(url, (err, response) => {
           var ids = JSON.parse(response.headers['x-miniprofiler-ids']);
@@ -15,6 +15,7 @@ module.exports = function(server) {
 
           server.post('/mini-profiler-resources/results/', { id: ids[0], popup: 1 }, (err, response, body) => {
             var result = JSON.parse(body);
+
             expect(result.Id).to.equal(ids[0]);
             expect(result.Name).to.equal(url);
             expect(result.DurationMilliseconds).to.be.above(40);

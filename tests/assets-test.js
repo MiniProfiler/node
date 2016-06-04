@@ -10,6 +10,7 @@ module.exports = function(server) {
 
     var files = [
       'includes.css',
+      'includes.css',
       'includes.tmpl',
       'includes.js'
     ];
