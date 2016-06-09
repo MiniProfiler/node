@@ -1,6 +1,6 @@
 {
   "name": "miniprofiler",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "A simple but effective mini-profiler.",
   "main": "lib/miniprofiler.js",
   "scripts": {
@@ -44,8 +44,10 @@
     "istanbul": "^0.4.3",
     "koa": "^1.2.0",
     "koa-route": "^2.4.2",
+    "koa-views": "^4.1.0",
     "mocha": "^2.5.3",
-    "pug": "^2.0.0-alpha7",
-    "request": "^2.72.0"
+    "pug": "^2.0.0-beta2",
+    "request": "^2.72.0",
+    "vision": "^4.1.0"
   }
 }

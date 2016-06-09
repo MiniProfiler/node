@@ -10,6 +10,10 @@ Node.js implementation of Stack Exchange's MiniProfiler
 ![Dependencies](https://david-dm.org/MiniProfiler/node.svg)
 ![devDependencies](https://david-dm.org/MiniProfiler/node/dev-status.svg#info=devDependencies)
 
+## Demonstration
+
+Visit [http://miniprofiler-demo.herokuapp.com](http://miniprofiler-demo.herokuapp.com) for a live demonstration.
+
 ## Installation (via [npm](https://npmjs.org/package/miniprofiler))
 
 ```bash
