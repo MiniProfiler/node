@@ -4,8 +4,15 @@ node_js:
   - "5"
   - "stable"
 
+sudo: required
+
+services:
+  - docker
+
 before_script:
+  - npm run start-services
   - npm run lint
+  - sleep 3
 
 after_script:
   - npm run coverage

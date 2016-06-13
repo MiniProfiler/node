@@ -1,9 +1,10 @@
 {
   "name": "miniprofiler",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "A simple but effective mini-profiler.",
   "main": "lib/miniprofiler.js",
   "scripts": {
+    "start-services": "docker run -d -p 6060:6379 redis",
     "lint": "eslint .",
     "test": "mocha tests/ -c",
     "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- tests/ -R spec",
@@ -26,6 +27,7 @@
   "readmeFilename": "README.md",
   "dependencies": {
     "debug": "^2.2.0",
+    "lru-cache": "^4.0.1",
     "node-uuid": "^1.4.7",
     "underscore": "^1.8.3"
   },
@@ -38,6 +40,7 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "coveralls": "^2.11.9",
+    "docker-ip": "^2.0.1",
     "eslint": "^2.11.1",
     "express": "^4.13.4",
     "hapi": "^13.4.1",
@@ -47,6 +50,7 @@
     "koa-views": "^4.1.0",
     "mocha": "^2.5.3",
     "pug": "^2.0.0-beta2",
+    "redis": "^2.6.1",
     "request": "^2.72.0",
     "vision": "^4.1.0"
   }
