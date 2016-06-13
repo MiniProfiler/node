@@ -6,13 +6,12 @@ var route = require('koa-route');
 var app = koa();
 var ip = require('docker-ip');
 var redis = require('redis');
-var RedisStorage = require('../../../lib/storages/redis.js');
 
 var client = redis.createClient(6060, ip());
 
 miniprofiler.configure({
 	popupRenderPosition: 'right',
-	storage: new RedisStorage(client)
+	storage: new miniprofiler.storage.RedisStorage(client)
 });
 
 app.use(miniprofiler.koa());

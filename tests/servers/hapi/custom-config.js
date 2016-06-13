@@ -6,7 +6,6 @@ const Hapi = require('hapi');
 
 var ip = require('docker-ip');
 var redis = require('redis');
-var RedisStorage = require('../../../lib/storages/redis.js');
 var client = redis.createClient(6060, ip());
 
 const server = new Hapi.Server();
@@ -14,7 +13,7 @@ server.connection({ port: 8083 });
 
 miniprofiler.configure({
 	popupRenderPosition: 'right',
-	storage: new RedisStorage(client)
+	storage: new miniprofiler.storage.RedisStorage(client)
 });
 
 server.register(miniprofiler.hapi(), (err) => {
