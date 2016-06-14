@@ -6,11 +6,13 @@ const Hapi = require('hapi');
 const server = new Hapi.Server();
 server.connection({ port: 8083 });
 
-var disableMiniProfiler = (req) => {
-  return false;
+var options = {
+  enable: (req) => {
+    return false;
+  }
 };
 
-server.register(miniprofiler.hapi(disableMiniProfiler), (err) => {
+server.register(miniprofiler.hapi(options), (err) => {
   if (err) throw (err);
 });
 

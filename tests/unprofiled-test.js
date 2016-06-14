@@ -7,7 +7,7 @@ module.exports = function(server) {
     before(server.setUp.bind(null, 'unprofiled'));
     after(server.tearDown);
 
-    it('should not return profiler ID', function(done) {
+    it('should not return profile ID', function(done) {
       server.get('/', (err, response) => {
         expect(response.headers).to.not.include.keys('x-miniprofiler-ids');
         done();

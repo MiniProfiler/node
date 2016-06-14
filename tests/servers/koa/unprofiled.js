@@ -6,11 +6,13 @@ var route = require('koa-route');
 
 var app = koa();
 
-var disableMiniProfiler = (req) => {
-  return false;
+var options = {
+  enable: (req) => {
+    return false;
+  }
 };
 
-app.use(miniprofiler.koa(disableMiniProfiler));
+app.use(miniprofiler.koa(options));
 
 app.use(route.get('/', function *(){
   yield new Promise((resolve, reject) => {

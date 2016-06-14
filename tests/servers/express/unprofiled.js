@@ -5,11 +5,13 @@ var express = require('express');
 
 var app = express();
 
-var disableMiniProfiler = (req) => {
-  return false;
+var options = {
+  enable: (req) => {
+    return false;
+  }
 };
 
-app.use(miniprofiler.express(disableMiniProfiler));
+app.use(miniprofiler.express(options));
 
 app.get('/', (req, res) => {
 	req.miniprofiler.timeQuery('custom', 'Sleeping...', setTimeout, function() {
