@@ -20,10 +20,6 @@ $ npm install miniprofiler
 
 You can hook up your application with any of the following packages are available on npm:
 
-- `miniprofiler-http` - For profiling http(s) requests
-- `miniprofiler-pg` - For profiling [pg](https://www.npmjs.com/package/pg) queries
-- `miniprofiler-redis` - For profiling [pg](https://www.npmjs.com/package/redis) calls
-
 | Name      | About | Version   |
 |-----------|-----------|-----------|
 | `miniprofiler-http` | Profile http(s) requests | [![NPM](https://img.shields.io/npm/v/miniprofiler-http.svg)](https://www.npmjs.com/package/miniprofiler-http) |
