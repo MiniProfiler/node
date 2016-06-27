@@ -1,6 +1,4 @@
-##### `The project is still under development, the API will change! Use with caution.`
-
-# node-miniprofiler
+# MiniProfiler for Node.js
 
 Node.js implementation of Stack Exchange's MiniProfiler
 
@@ -14,15 +12,27 @@ Node.js implementation of Stack Exchange's MiniProfiler
 
 Visit [http://miniprofiler-demo.herokuapp.com](http://miniprofiler-demo.herokuapp.com) for a live demonstration.
 
-## Installation (via [npm](https://npmjs.org/package/miniprofiler))
+## Installation
 
 ```bash
 $ npm install miniprofiler
 ```
 
+You can hook up your application with any of the following packages are available on npm:
+
+- `miniprofiler-http` - For profiling http(s) requests
+- `miniprofiler-pg` - For profiling [pg](https://www.npmjs.com/package/pg) queries
+- `miniprofiler-redis` - For profiling [pg](https://www.npmjs.com/package/redis) calls
+
+| Name      | About | Version   |
+|-----------|-----------|-----------|
+| `miniprofiler-http` | Profile http(s) requests | [![NPM](https://img.shields.io/npm/v/miniprofiler-http.svg)](https://www.npmjs.com/package/miniprofiler-http) |
+| `miniprofiler-pg` | Profile [pg](https://www.npmjs.com/package/pg) queries | [![NPM](https://img.shields.io/npm/v/miniprofiler-pg.svg)](https://www.npmjs.com/package/miniprofiler-pg) |
+| `miniprofiler-redis`| Profile [redis](https://www.npmjs.com/package/redis) calls | [![NPM](https://img.shields.io/npm/v/miniprofiler-redis.svg)](https://www.npmjs.com/package/miniprofiler-redis) |
+
 ## Usage
 
-### Simple usage using express.js
+### Simple usage with express.js
 
 `server.js`
 
@@ -61,7 +71,47 @@ When visiting `localhost:8080`, you should see this.
 
 ![](/examples/images/example0.png)
 
-See [goenning/miniprofiler-demo](https://github.com/goenning/miniprofiler-demo) for a running example.
+## API
 
-![](/examples/images/example1.png)
-![](/examples/images/example2.png)
+### `miniprofiler.{framework}`
+
+Replace `{framework}` with koa, express or hapi.
+
+This function returns a framework specific middleware that is responsible for initializing MiniProfiler on each request.
+
+### `miniprofiler.{framework}`.for([provider])
+
+`provider` is a call for any of the supported providers listed [here](#installation).
+
+### `miniprofiler.configure([options])`
+
+#### `options` object properties
+| Property  | Default   | Description |
+|-----------|-----------|-------------|
+| storage   | InMemoryStorage({ max: 100, maxAge: 1000 \* 60 \* 60 }) | InMemoryStorage or RedisStorage; used to store or fetch a string JSON blob of profiling information |
+| ignoredPaths      | []      | string array ; any request whose `url` property is in ignoredPaths will not be profiled |
+| trivialDurationThresholdMilliseconds      | 2.5      | double ; any step lasting longer than this will be considered trivial, and hidden by default |
+| popupShowTimeWithChildren      | false      | boolean ; whether or not to include the "time with children" column |
+| popupRenderPosition      | left      | 'left' or 'right' ; which side of the screen to display timings on |
+
+#### `options.storage` examples
+
+#### InMemoryStorage
+
+```
+miniprofiler.configure({
+  storage: miniprofiler.storage.InMemoryStorage({ lruCacheOptions });
+})
+```
+
+Refer to [lru-cache](https://www.npmjs.com/package/lru-cache) documentation for `lruCacheOptions`.
+
+#### RedisStorage
+
+```
+miniprofiler.configure({
+  storage: miniprofiler.storage.RedisStorage(client);
+})
+```
+
+Where `client` is an instance of [redis.createClient](https://www.npmjs.com/package/redis).
