@@ -29,7 +29,7 @@ module.exports = function(server) {
         var ids = JSON.parse(response.headers['x-miniprofiler-ids']);
         expect(ids).to.have.lengthOf(1);
 
-        server.post('/mini-profiler-resources/results', { id: ids[0], popup: 1 }, (err, response, body) => {
+        server.get(`/mini-profiler-resources/results?id=${ids[0]}&popup=1`, (err, response, body) => {
           var result = JSON.parse(body);
           expect(result.Id).to.equal(ids[0]);
           expect(result.Name).to.equal('/?key1=value1&key2=value2');
