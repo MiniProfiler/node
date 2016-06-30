@@ -30,4 +30,17 @@ server.route({
   }
 });
 
+server.route({
+  method: 'GET',
+  path:'/inside-step',
+  handler: function(request, reply) {
+    request.app.miniprofiler.step('Step 1', (unstep) => {
+      request.app.miniprofiler.timeQuery('custom', 'Sleeping...', setTimeout, function() {
+        reply.view('index', { title: 'Hey', message: 'Hello there!' });
+        unstep();
+      }, 50);
+    });
+  }
+});
+
 module.exports = server;

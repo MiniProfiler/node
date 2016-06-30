@@ -13,4 +13,13 @@ app.get('/', (req, res) => {
   res.render('index', { title: 'Hey', message: 'Hello there!' });
 });
 
+app.get('/inside-step', (req, res) => {
+  req.miniprofiler.step('Step 1', (unstep) => {
+    req.miniprofiler.timeQuery('custom', 'Sleeping...', setTimeout, function() {
+      res.render('index', { title: 'Hey', message: 'Hello there!' });
+      unstep();
+    }, 50);
+  });
+});
+
 module.exports = app;
