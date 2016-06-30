@@ -2,7 +2,7 @@
 
 Node.js implementation of Stack Exchange's MiniProfiler
 
-[![NPM](https://img.shields.io/npm/v/miniprofiler.svg)](https://img.shields.io/npm/v/miniprofiler.svg)
+[![NPM](https://img.shields.io/npm/v/miniprofiler.svg)](https://www.npmjs.com/package/miniprofiler)
 [![Build](https://travis-ci.org/MiniProfiler/node.svg)](https://travis-ci.org/MiniProfiler/node)
 [![Coverage](https://coveralls.io/repos/github/MiniProfiler/node/badge.svg?branch=master)](https://coveralls.io/github/MiniProfiler/node?branch=master)
 ![Dependencies](https://david-dm.org/MiniProfiler/node.svg)
