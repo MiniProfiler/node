@@ -69,13 +69,13 @@ When visiting `localhost:8080`, you should see this.
 
 ## API
 
-### `miniprofiler.{framework}`
+### `miniprofiler.{framework}()`
 
 Replace `{framework}` with koa, express or hapi.
 
 This function returns a framework specific middleware that is responsible for initializing MiniProfiler on each request.
 
-### `miniprofiler.{framework}`.for([provider])
+### `miniprofiler.{framework}.for([provider])`
 
 `provider` is a call for any of the supported providers listed [here](#installation).
 
