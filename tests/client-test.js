@@ -3,7 +3,7 @@
 var expect = require('chai').expect;
 
 module.exports = function(server) {
-  describe.only('Client Timing Tests', function() {
+  describe('Client Timing Tests', function() {
     before(server.setUp.bind(null, 'default'));
     after(server.tearDown);
 
@@ -21,17 +21,34 @@ module.exports = function(server) {
             timing: {
               navigationStart: 1000,
               responseEnd: 1014,
-              responseStart: 1002
+              loadEventStart: 1080,
+              requestStart: 1001,
+              secureConnectionStart: 0,
+              loadEventEnd: 1112,
+              responseStart: 1002,
+              'First Paint Time':1200
             }
           }
         }, (err, response, body) => {
           var data = JSON.parse(body);
-          expect(data.ClientTimings).to.be.equal({
+          expect(data.ClientTimings).to.be.deep.equal({
             RedirectCount: 0,
             Timings: [{
+              Name: 'Request Start',
+              Start: 1,
+              Duration: -1
+            },{
               Name: 'Response',
               Start: 2,
               Duration: 12
+            },{
+              Name: 'Load Event',
+              Start: 80,
+              Duration: 32
+            },{
+              Name: 'First Paint Time',
+              Start: 200,
+              Duration: -1
             }]
           });
           done();
