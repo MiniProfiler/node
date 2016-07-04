@@ -1,6 +1,7 @@
 'use strict';
 
 var expect = require('chai').expect;
+var pkg = require('../package.json');
 
 module.exports = function(server) {
   describe('Custom Configuration Tests', function() {
@@ -14,7 +15,7 @@ module.exports = function(server) {
         var ids = JSON.parse(response.headers['x-miniprofiler-ids']);
         expect(ids).to.have.lengthOf(1);
 
-        expect(body.trim()).to.be.equal(`<script async type="text/javascript" id="mini-profiler" src="/mini-profiler-resources/includes.js?v=" data-version="" data-path="/mini-profiler-resources/" data-current-id="${ids[0]}" data-ids="${ids[0]}" data-position="right" data-trivial="true" data-children="false" data-max-traces="15" data-controls="true" data-authorized="true" data-toggle-shortcut="" data-start-hidden="false" data-trivial-milliseconds="2.5"></script>`);
+        expect(body.trim()).to.be.equal(`<script async type="text/javascript" id="mini-profiler" src="/mini-profiler-resources/includes.js?v=${pkg.version}" data-version="${pkg.version}" data-path="/mini-profiler-resources/" data-current-id="${ids[0]}" data-ids="${ids[0]}" data-position="right" data-trivial="true" data-children="false" data-max-traces="15" data-controls="true" data-authorized="true" data-toggle-shortcut="" data-start-hidden="false" data-trivial-milliseconds="2.5"></script>`);
         done();
       });
     });

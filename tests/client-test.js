@@ -56,6 +56,21 @@ module.exports = function(server) {
       });
     });
 
+    it('should not return client timing when data is not sent via POST', function(done) {
+      server.get('/', (err, response) => {
+        var ids = JSON.parse(response.headers['x-miniprofiler-ids']);
+
+        server.post('/mini-profiler-resources/results', {
+          id: ids[0],
+          popup: 1
+        }, (err, response, body) => {
+          var data = JSON.parse(body);
+          expect(data.ClientTimings).to.be.null;
+          done();
+        });
+      });
+    });
+
   });
 
 };
