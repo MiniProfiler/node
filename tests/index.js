@@ -1,10 +1,9 @@
 'use strict';
 
-var servers = require('./servers');
 var fs = require('fs');
-var _ = require('underscore');
+var servers = require('./servers');
 
-var testCases = _.filter(fs.readdirSync('./tests'), (file) => file.endsWith('-test.js'));
+var testCases = fs.readdirSync('./tests').filter((file) => file.endsWith('-test.js'));
 
 for (var server of servers) {
   describe(`[${server.framework}]`, function() {
