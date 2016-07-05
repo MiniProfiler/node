@@ -1,6 +1,5 @@
 'use strict';
 
-var debug = require('debug')('miniprofiler:tests');
 var request = require('request');
 var frameworks = {
   'koa': { 'port': 8081 },
@@ -26,14 +25,12 @@ for (let fw in frameworks) {
 
   server.get = (path, cb) => {
     request.get(`http://localhost:${frameworks[fw].port}${path}`, (err, response, body) => {
-      if (err) debug(err);
       cb(err, response, body);
     });
   };
 
   server.post = (path, params, cb) => {
     request.post({url: `http://localhost:${frameworks[fw].port}${path}`, form: params }, (err, response, body) => {
-      if (err) debug(err);
       cb(err, response, body);
     });
   };
