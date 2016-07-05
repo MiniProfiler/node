@@ -13,7 +13,8 @@ server.connection({ port: 8083 });
 
 miniprofiler.configure({
 	popupRenderPosition: 'right',
-	storage: new miniprofiler.storage.RedisStorage(client)
+	storage: new miniprofiler.storage.RedisStorage(client),
+  ignoredPaths: [ '/hidden' ]
 });
 
 server.register(miniprofiler.hapi(), (err) => {
@@ -25,6 +26,14 @@ server.route({
   path:'/',
   handler: function(request, reply) {
     return reply(request.app.miniprofiler.include());
+  }
+});
+
+server.route({
+  method: 'GET',
+  path:'/hidden',
+  handler: function(request, reply) {
+    return reply('This won\'t be profiled.');
   }
 });
 

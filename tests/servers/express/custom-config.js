@@ -10,13 +10,18 @@ var app = express();
 
 miniprofiler.configure({
 	popupRenderPosition: 'right',
-	storage: new miniprofiler.storage.RedisStorage(client)
+	storage: new miniprofiler.storage.RedisStorage(client),
+  ignoredPaths: [ '/hidden' ]
 });
 
 app.use(miniprofiler.express());
 
 app.get('/', (req, res) => {
 	res.send(res.locals.miniprofiler.include());
+});
+
+app.get('/hidden', (req, res) => {
+  res.send('This won\'t be profiled.');
 });
 
 module.exports = app;

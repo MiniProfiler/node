@@ -36,5 +36,12 @@ module.exports = function(server) {
       });
     });
 
+    it('should not get timing about from ignored paths', function(done) {
+      server.get('/hidden', (err, response, body) => {
+        expect(response.headers).to.not.include.keys('x-miniprofiler-ids');
+        done();
+      });
+    });
+
   });
 };

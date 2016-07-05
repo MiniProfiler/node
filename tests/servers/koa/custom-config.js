@@ -11,13 +11,18 @@ var client = redis.createClient(6060, ip());
 
 miniprofiler.configure({
 	popupRenderPosition: 'right',
-	storage: new miniprofiler.storage.RedisStorage(client)
+	storage: new miniprofiler.storage.RedisStorage(client),
+  ignoredPaths: [ '/hidden' ]
 });
 
 app.use(miniprofiler.koa());
 
 app.use(route.get('/', function *(){
   this.body = this.state.miniprofiler.include();
+}));
+
+app.use(route.get('/hidden', function *(){
+  this.body = 'This won\'t be profiled.';
 }));
 
 module.exports = app;
