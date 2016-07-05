@@ -20,7 +20,7 @@ $ npm install miniprofiler
 
 You can hook up your application with any of the following packages are available on npm:
 
-| Name      | About | Version   |
+| Name      | About     | Version   |
 |-----------|-----------|-----------|
 | `miniprofiler-http` | Profile http(s) requests | [![NPM](https://img.shields.io/npm/v/miniprofiler-http.svg)](https://www.npmjs.com/package/miniprofiler-http) |
 | `miniprofiler-pg` | Profile [pg](https://www.npmjs.com/package/pg) queries | [![NPM](https://img.shields.io/npm/v/miniprofiler-pg.svg)](https://www.npmjs.com/package/miniprofiler-pg) |
@@ -69,11 +69,17 @@ When visiting `localhost:8080`, you should see this.
 
 ## API
 
-### `miniprofiler.{framework}()`
+### `miniprofiler.{framework}([options])`
 
 Replace `{framework}` with koa, express or hapi.
 
 This function returns a framework specific middleware that is responsible for initializing MiniProfiler on each request.
+
+#### `options` object properties
+| Property  | Default   | Description |
+|-----------|-----------|-------------|
+| enable    | Always returns true | function(req, res) => boolean; this function is used to determine if the profiler should be enabled for the current request |
+| authorize | Always returns true | function(req, res) => boolean; this function is used to determine if the current request should be able to see the profiling results |
 
 ### `miniprofiler.{framework}.for([provider])`
 
@@ -85,10 +91,10 @@ This function returns a framework specific middleware that is responsible for in
 | Property  | Default   | Description |
 |-----------|-----------|-------------|
 | storage   | InMemoryStorage({ max: 100, maxAge: 1000 \* 60 \* 60 }) | InMemoryStorage or RedisStorage; used to store or fetch a string JSON blob of profiling information |
-| ignoredPaths      | []      | string array ; any request whose `url` property is in ignoredPaths will not be profiled |
-| trivialDurationThresholdMilliseconds      | 2.5      | double ; any step lasting longer than this will be considered trivial, and hidden by default |
-| popupShowTimeWithChildren      | false      | boolean ; whether or not to include the "time with children" column |
-| popupRenderPosition      | left      | 'left' or 'right' ; which side of the screen to display timings on |
+| ignoredPaths | [ ] | string array ; any request whose `url` property is in ignoredPaths will not be profiled |
+| trivialDurationThresholdMilliseconds | 2.5 | double ; any step lasting longer than this will be considered trivial, and hidden by default |
+| popupShowTimeWithChildren | false | boolean ; whether or not to include the "time with children" column |
+| popupRenderPosition       | left  | 'left', 'right', 'bottomLeft' or 'bottomRight' ; which side of the screen to display timings on |
 
 #### `options.storage` examples
 
