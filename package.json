@@ -37,19 +37,19 @@
   ],
   "devDependencies": {
     "chai": "^3.5.0",
-    "coveralls": "^2.11.9",
+    "coveralls": "^2.11.11",
     "docker-ip": "^2.0.1",
-    "eslint": "^3.0.0",
+    "eslint": "^3.1.1",
     "express": "^4.13.4",
-    "hapi": "^13.4.1",
+    "hapi": "^13.5.0",
     "istanbul": "^0.4.3",
-    "koa": "^1.2.0",
+    "koa": "^1.2.1",
     "koa-route": "^2.4.2",
     "koa-views": "^4.1.0",
     "mocha": "^2.5.3",
     "pug": "^2.0.0-beta2",
     "redis": "^2.6.1",
-    "request": "^2.72.0",
+    "request": "^2.73.0",
     "vision": "^4.1.0"
   }
 }
