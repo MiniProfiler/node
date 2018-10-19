@@ -26,6 +26,7 @@
   "license": "Apache-2.0",
   "readmeFilename": "README.md",
   "dependencies": {
+    "asyncctx": "^1.0.9",
     "lru-cache": "^4.0.1"
   },
   "tags": [
