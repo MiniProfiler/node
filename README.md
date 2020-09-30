@@ -10,7 +10,7 @@ Node.js implementation of Stack Exchange's MiniProfiler
 
 ## Demonstration
 
-Visit [http://miniprofiler-demo.herokuapp.com](http://miniprofiler-demo.herokuapp.com) for a live demonstration.
+Visit [http://miniprofiler-demo.herokuapp.com](http://miniprofiler-demo.herokuapp.com) for a live demonstration :)
 
 ## Installation
 
@@ -117,3 +117,6 @@ miniprofiler.configure({
 ```
 
 Where `client` is an instance of [redis.createClient](https://www.npmjs.com/package/redis).
+
+
+Awesome Project, Show some love give it a try!
